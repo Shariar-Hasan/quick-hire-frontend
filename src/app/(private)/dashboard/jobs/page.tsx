@@ -1,3 +1,3 @@
-export default function MyJobsPage() {
-  return <h1>My Jobs Page - Manage your posted jobs</h1>;
+export default function JobsPage() {
+  return <h1>Jobs Page - Browse all available jobs</h1>;
 }

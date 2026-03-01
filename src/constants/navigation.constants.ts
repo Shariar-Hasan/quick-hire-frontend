@@ -13,7 +13,7 @@ export const dashboard_nav_links = [
     },
     {
         title: "Post a Job",
-        href: "/dashboard/post-job",
+        href: "/dashboard/jobs/post",
         icon: PlusCircle,
     },
     {

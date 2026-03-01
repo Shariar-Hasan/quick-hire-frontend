@@ -1,8 +1,10 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Slot } from "radix-ui"
+import { Slot } from "@radix-ui/react-slot"
 
 import { cn } from "@/lib/utils"
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
+import { LoaderCircle } from "lucide-react"
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -40,23 +42,56 @@ const buttonVariants = cva(
 
 function Button({
   className,
-  variant = "default",
-  size = "default",
+  variant,
+  size,
   asChild = false,
+  title,
+  titlePlace = "top",
+  loadingText,
+  loading = false,
+  href,
+  type,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
+    asChild?: boolean,
+    title?: React.ReactNode | string,
+    titlePlace?: "top" | "right" | "bottom" | "left",
+    loading?: boolean
+    loadingText?: string;
+    href?: string
   }) {
-  const Comp = asChild ? Slot.Root : "button"
+   const Comp = asChild ? Slot : "button"
 
+  if (loading) {
+    props.children = <div className="flex items-center gap-2">
+      <LoaderCircle className="animate-spin" /> {loadingText !== undefined ? loadingText : 'Loading...'}
+    </div>
+  }
+
+  if (title) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild slot="div">
+          <Comp
+            data-slot="button"
+            className={cn(buttonVariants({ variant, size, className }))}
+            {...props}
+            type={type || (href ? undefined : "button")}
+          />
+        </TooltipTrigger>
+        <TooltipContent side={titlePlace}>
+          {title}
+        </TooltipContent>
+      </Tooltip>
+    )
+  }
   return (
     <Comp
       data-slot="button"
-      data-variant={variant}
-      data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
+      type={type || (href ? undefined : "button")}
     />
   )
 }

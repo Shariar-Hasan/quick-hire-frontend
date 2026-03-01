@@ -28,3 +28,7 @@ export interface Job extends BaseModel {
     expires_at?: Date | null;
     employer?: User | null; // For nested job details when needed
 }
+
+export interface JobWithAppliedCount extends Job {
+    applications_count: number;
+}

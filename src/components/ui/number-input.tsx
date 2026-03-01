@@ -1,6 +1,6 @@
-import useDebounce from '@/hooks/useDebounce';
+import useDebounce from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
-import { NumberFilterProps } from '@/types/table.types';
+import { NumberFilterProps } from '@/types/table-types';
 import React, { ChangeEvent, useState } from 'react'
 import { Input } from './input';
 import { X } from 'lucide-react';

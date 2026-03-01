@@ -1,5 +1,5 @@
-import useDebounce from "@/hooks/useDebounce";
-import { AppTableSearchProps, TextFilterProps } from "@/types/table.types";
+import useDebounce from "@/hooks/use-debounce";
+import { AppTableSearchProps, TextFilterProps } from "@/types/table-types";
 import { ChangeEvent, useState } from "react";
 import { Input } from "./input";
 import { cn } from "@/lib/utils";
@@ -25,7 +25,7 @@ export default function DebouncedInput(props: TextFilterProps) {
             <Input
                 type="text"
                 value={searchValue}
-                className={cn("min-w-[220px] w-full", {
+                className={cn("min-w-55 w-full", {
                     "pr-8": props.clearable && searchValue.trim(),
                     "cursor-not-allowed opacity-80": props.disabled,
                 })}

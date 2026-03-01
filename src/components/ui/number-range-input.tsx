@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Separator } from "./separator";
-import { NumberRangeFilterProps } from "@/types/table.types";
+import { NumberRangeFilterProps } from "@/types/table-types";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 

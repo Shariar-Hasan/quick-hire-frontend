@@ -1,85 +1,10 @@
-// import React, { useState, useEffect } from 'react';
-// import {
-//     Select,
-//     SelectTrigger,
-//     SelectContent,
-//     SelectItem,
-//     SelectValue,
-// } from '@/components/ui/select';
-// import { Input } from '@/components/ui/input';
-// import { COUNTRY_CODES, CountryCodeType } from '@/content/country-list';
-// import { SearchableSelect } from './searchable-select';
-// import { ChevronDown } from 'lucide-react';
-
-// export interface PhoneInputValue {
-//     countryCode: string;
-//     phone: string;
-//     fullPhone: string;
-// }
-
-// interface PhoneInputProps {
-//     value?: string;
-//     onChange: (value: PhoneInputValue) => void;
-//     placeholder?: string;
-//     className?: string;
-//     disabled?: boolean;
-//     defaultCountryCode?: CountryCodeType;
-// }
-
-// export const PhoneInput: React.FC<PhoneInputProps> = ({ value = '', onChange, placeholder, className, disabled, defaultCountryCode }) => {
-//     // Parse initial value
-//     const initialCode = COUNTRY_CODES.find(c => value.startsWith(c.cc))?.cc
-//         || COUNTRY_CODES.find(c => c.cc === defaultCountryCode)?.cc
-//         || '+1';
-//     const initialPhone = value.replace(initialCode, '').replace(/\D/g, '');
-
-//     const [countryCode, setCountryCode] = useState(initialCode);
-//     const [phone, setPhone] = useState(initialPhone);
-//     const [search, setSearch] = useState('');
-
-//     useEffect(() => {
-//         onChange({ countryCode, phone, fullPhone: countryCode + phone });
-//     }, [countryCode, phone, onChange]);
-
-//     // Filter country codes for search
-//     const filteredCodes = search
-//         ? COUNTRY_CODES.filter(c =>
-//             c.label.toLowerCase().includes(search.toLowerCase()) ||
-//             c.cc.includes(search)
-//         )
-//         : COUNTRY_CODES;
-
-//     return (
-//         <div className={`flex items-center gap-2 relative ${className || ''}`}>
-//             <SearchableSelect
-//                 className='max-w-max absolute left-[1px] top-[1px] h-[33px] border-0 outline-0 border-r rounded-r-none'
-//                 value={countryCode}
-//                 onSelect={(code: string) => setCountryCode(code)}
-//                 disabled={disabled}
-//                 list={COUNTRY_CODES?.map(c => ({ value: c.cc, label: `${c.label} (${c.cc})` }))}
-//                 selectedRender={(item) => (
-//                     item?.value
-//                 )}
-//             />
-//             <Input
-//                 type="tel"
-//                 className="flex-1 pl-[55px]"
-//                 value={phone}
-//                 onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
-//                 placeholder={placeholder || 'Phone number'}
-//                 disabled={disabled}
-//             />
-//         </div>
-//     );
-// };
-
 
 import * as React from "react";
 import { CheckIcon, ChevronsUpDown } from "lucide-react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
-import { Button } from "@/components/common/button";
+import { Button } from "@/components/ui/button";
 import {
     Command,
     CommandEmpty,
@@ -87,14 +12,14 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-} from "@/components/common/command";
-import { Input } from "@/components/common/input";
+} from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/common/popover";
-import { ScrollArea } from "@/components/common/scroll-area";
+} from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 type PhoneInputProps = Omit<
@@ -117,15 +42,6 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
                     inputComponent={InputComponent}
                     smartCaret={false}
                     value={value || undefined}
-                    /**
-                     * Handles the onChange event.
-                     *
-                     * react-phone-number-input might trigger the onChange event as undefined
-                     * when a valid phone number is not entered. To prevent this,
-                     * the value is coerced to an empty string.
-                     *
-                     * @param {E164Number | undefined} value - The entered value
-                     */
                     onChange={(value) => onChange?.(value || ("" as RPNInput.Value))}
                     {...props}
                 />

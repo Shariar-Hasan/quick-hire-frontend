@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Button } from "./button";
 import { Calendar } from "./calendar";
-import { AppTableRange, DateRangeFilterProps } from "@/types/table.types";
+import { AppTableRange, DateRangeFilterProps } from "@/types/table-types";
 import { DateRange } from "react-day-picker";
 
 
@@ -186,7 +186,7 @@ export function DateRangePickerInput(props: DateRangeFilterProps) {
                 <div className="flex gap-2 justify-end mt-4">
                     <Button
                         variant="outline"
-                        className="w-[100px]"
+                        className="w-25"
                         onClick={() => {
                             handleSelect(undefined);
                             setSelectedPreset(undefined);
@@ -198,7 +198,7 @@ export function DateRangePickerInput(props: DateRangeFilterProps) {
                         Reset
                     </Button>
                     <Button
-                        className="w-[100px]"
+                        className="w-25"
                         onClick={() => {
                             // if both dates are selected, close the popover
                             if (range && range.from && range.to) {

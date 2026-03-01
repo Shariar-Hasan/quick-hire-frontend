@@ -1,5 +1,5 @@
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/common/popover";
-import { Button } from "@/components/common/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 import { ChevronDown, Search, X } from "lucide-react";
 import Checkbox from "./checkbox";
 import { cn, formatMultiValues } from "@/lib/utils";
@@ -141,7 +141,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                 >
                     {searchable && <div className="relative">
                         {/* make a searchable options */}
-                        <Search className="absolute left-2 top-[17px] -translate-y-1/2 text-xs w-3 text-gray-500" />
+                        <Search className="absolute left-2 top-4.25 -translate-y-1/2 text-xs w-3 text-gray-500" />
                         <input
                             type="text"
                             placeholder="Search label..."
@@ -153,7 +153,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                             }}
                         />
                     </div>}
-                    <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" data-multiselect-content>
+                    <div className="flex flex-col gap-1 max-h-75 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" data-multiselect-content>
                         {filteredOptions.length === 0 ? (
                             <div className="text-sm text-muted-foreground text-center py-4">
                                 {emptyMessage}

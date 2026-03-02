@@ -83,7 +83,7 @@ export function NumberRangeInput({
                     </PopoverTrigger>
                     {hasValue && (
                         <X
-                            className="absolute top-1/2 -translate-y-1/2 right-2 h-[18px] w-[18px] text-muted-foreground hover:text-foreground cursor-pointer hover:bg-gray-500/10 rounded"
+                            className="absolute top-1/2 -translate-y-1/2 right-2 h-4.5 w-4.5 text-muted-foreground hover:text-foreground cursor-pointer hover:bg-gray-500/10 rounded"
                             onClick={(e: React.MouseEvent<SVGElement>) => {
                                 e.stopPropagation();
                                 handleReset();
@@ -92,7 +92,7 @@ export function NumberRangeInput({
                     )}
                 </div>
 
-                <PopoverContent className="w-[260px] p-4" align="start">
+                <PopoverContent className="w-65 p-4" align="start">
                     <div className="space-y-3">
                         <div className="flex gap-2">
                             <Input

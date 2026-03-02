@@ -1,12 +1,14 @@
 'use client'
 
 import AppTable from "@/components/dashboard/AppTable";
+import { useConfirm } from "@/components/providors/confirm-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useQueryParams } from "@/hooks/use-query-params";
 import { createRoute } from "@/lib/createRoute";
 import { Parser } from "@/lib/htmlParser";
 import Str from "@/lib/str";
+import { cn } from "@/lib/utils";
 import { companyService } from "@/services/company.service";
 import { jobService } from "@/services/job.service";
 import { locationService } from "@/services/location.service";
@@ -20,7 +22,7 @@ interface DropDownData {
   subjects: DropDownType[];
 }
 export default function JobsPage() {
-
+  const confirm = useConfirm()
   const { queryParams, setOptions, options } = useQueryParams<JobWithAppliedCount>({
     search: "",
     page: 1,
@@ -41,6 +43,7 @@ export default function JobsPage() {
 
   const [load, setLoad] = useState({
     getJobs: true,
+    delete: false
   });
 
   const [total, setTotal] = useState(0);
@@ -83,7 +86,27 @@ export default function JobsPage() {
     };
     fetchConfigs();
   }, []);
-
+  const handleDelete = async (job: JobWithAppliedCount) => {
+    if (!await confirm({
+      title: "Delete Job",
+      description: `Are you sure you want to delete the job "${job.title}"? This action cannot be undone.`,
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+    })) {
+      return;
+    }
+    try {
+      setLoad((prev) => ({ ...prev, delete: true }));
+      const { error } = await jobService.remove(job.id);
+      if (!error) {
+        getData();
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+    } finally {
+      setLoad((prev) => ({ ...prev, delete: false }));
+    }
+  }
   const columns: AppTableColumn<JobWithAppliedCount>[] = [
     {
       label: "Title",
@@ -98,6 +121,17 @@ export default function JobsPage() {
       ),
     },
     {
+      label: "Work Mode",
+      cellClass: "text-center",
+      render: (row) => (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {Str.caseConverter(row.remote_type || '', { from: "snake", to: "normal" }) || "N/A"}
+          </span>
+        </div>
+      ),
+    },
+    {
       label: "Job type",
       cellClass: "text-center",
       render: (row) => (
@@ -106,6 +140,15 @@ export default function JobsPage() {
             {Str.caseConverter(row.job_type, { from: "snake", to: "normal" }) || "N/A"}
           </span>
         </div>
+      ),
+    },
+    {
+      label: "Featured",
+      cellClass: "text-center",
+      render: (row) => (
+        <span className={cn("font-medium", row.is_featured ? "text-green-500" : "text-gray-500")}>
+          {row.is_featured ? "Featured" : "Not Featured"}
+        </span>
       ),
     },
     {
@@ -140,9 +183,7 @@ export default function JobsPage() {
               label: "Delete Job",
               icon: <Trash className="h-4 w-4 text-red-500" />,
               onClick: () => {
-                router.push(createRoute("/dashboard/jobs/:id", {
-                  params: { id: row.job_id },
-                }))
+                handleDelete(row)
               },
             },
           ]}
@@ -290,7 +331,7 @@ export default function JobsPage() {
         onSortChange: (sortBy, sortOrder) =>
           setOptions((prev) => ({
             ...prev,
-            sortBy: sortBy ,
+            sortBy: sortBy,
             sortOrder,
           })),
       }}

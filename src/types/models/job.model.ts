@@ -1,5 +1,6 @@
 import { BaseModel } from "./base.model";
 import { JobStatus, JobType, RemoteType } from "./enum";
+import { Location } from "./location.model";
 import { User } from "./user.model";
 
 export interface Job extends BaseModel {
@@ -17,8 +18,8 @@ export interface Job extends BaseModel {
     salary_max?: number | null;
     currency?: string | null;
 
-    location?: string | null;
     location_id?: number | null;
+    location?: Location | null;
 
     is_featured: boolean;
 

@@ -27,6 +27,7 @@ import { jobService } from '@/services/job.service'
 import { locationService } from '@/services/location.service'
 import { JobStatus, JobType, RemoteType } from '@/types/models/enum'
 import { DropDownType } from '@/types/table-types'
+import { Job } from '@/types/models/job.model'
 
 // ─── Zod Schema ──────────────────────────────────────────────────────────────
 
@@ -84,7 +85,7 @@ const statusLabels: Record<JobStatus, string> = {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function PostJobPage() {
+export default function JobAddEditPage({ job }: { job?: Job }) {
   const router = useRouter()
 
   const [companies, setCompanies] = useState<DropDownType[]>([])

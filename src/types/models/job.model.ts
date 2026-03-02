@@ -18,6 +18,7 @@ export interface Job extends BaseModel {
     currency?: string | null;
 
     location?: string | null;
+    location_id?: number | null;
 
     is_featured: boolean;
 

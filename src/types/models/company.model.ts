@@ -1,6 +1,7 @@
 import { BaseModel } from "./base.model";
 import { Job } from "./job.model";
 import { Location } from "./location.model";
+import { User } from "./user.model";
 
 export enum CompanySize {
     STARTUP = "STARTUP",         // 1-10
@@ -18,6 +19,9 @@ export interface Company extends BaseModel {
     logo_url?: string | null;
     industry?: string | null;
     size?: CompanySize | null;
+
+    employer_id: number;
+    employer?: User | null;
 
     location_id?: number | null;
     location?: Location | null;

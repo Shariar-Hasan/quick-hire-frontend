@@ -1,7 +1,8 @@
 import { Location } from '@/types/models/location.model';
 import { ApiResponse, BaseService, PaginatedResponse, ServiceResult } from './base.service';
+import { DropDownType } from '@/types/table-types';
 
-export class LocationService extends BaseService {
+class LocationService extends BaseService {
     constructor() {
         super('/location');
     }
@@ -11,6 +12,13 @@ export class LocationService extends BaseService {
      */
     async findAll(query?: Record<string, any>): Promise<ServiceResult<ApiResponse<PaginatedResponse<Location>>>> {
         return this.get('', query);
+    }
+
+    /**
+     * Get all locations for dropdown (no pagination, minimal fields)
+     */
+    async findAllForDropDown(): Promise<ServiceResult<ApiResponse<DropDownType[]>>> {
+        return this.get('/dropdown');
     }
 
     /**

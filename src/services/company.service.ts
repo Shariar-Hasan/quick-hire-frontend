@@ -1,7 +1,8 @@
 import { Company } from '@/types/models/company.model';
 import { ApiResponse, BaseService, PaginatedResponse, ServiceResult } from './base.service';
+import { DropDownType } from '@/types/table-types';
 
-export class CompanyService extends BaseService {
+class CompanyService extends BaseService {
     constructor() {
         super('/company');
     }
@@ -11,6 +12,12 @@ export class CompanyService extends BaseService {
      */
     async findAll(query?: Record<string, any>): Promise<ServiceResult<ApiResponse<PaginatedResponse<Company>>>> {
         return this.get('', query);
+    }
+    /**
+     * Get all companies for dropdown (no pagination, minimal fields)
+     */
+    async findAllForDropDown(): Promise<ServiceResult<ApiResponse<DropDownType[]>>> {
+        return this.get('/dropdown');
     }
 
     /**
@@ -39,6 +46,13 @@ export class CompanyService extends BaseService {
      */
     async remove(id: number): Promise<ServiceResult<void>> {
         return this.delete(`/${id}`);
+    }
+
+    /**
+     * Get the authenticated employer's own company
+     */
+    async getMyCompany(): Promise<ServiceResult<ApiResponse<Company>>> {
+        return this.get('/me');
     }
 }
 

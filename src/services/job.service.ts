@@ -1,7 +1,7 @@
 import { Job, JobWithAppliedCount } from '@/types/models/job.model';
 import { ApiResponse, BaseService, PaginatedResponse, ServiceResult } from './base.service';
 
-export class JobService extends BaseService {
+class JobService extends BaseService {
     constructor() {
         super('/job');
     }

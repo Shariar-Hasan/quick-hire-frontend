@@ -4,13 +4,17 @@ import React from "react";
 
 export type SortByType<T> = keyof T | (string & {})
 
-export default interface PaginationTypes<T> {
+export interface PaginationTypes<T> {
     search: string;
     page: number;
     limit: number;
     sortBy: SortByType<T>;
     sortOrder: 'ASC' | 'DESC';
     filters: Record<keyof T | string, any>;
+}
+export interface DropDownType {
+    label: string;
+    id: string | number;
 }
 /**
  * Represents the sorting order for table columns

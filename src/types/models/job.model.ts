@@ -26,7 +26,9 @@ export interface Job extends BaseModel {
     status: JobStatus;
 
     expires_at?: Date | null;
-    employer?: User | null; // For nested job details when needed
+    employer?: User | null;
+
+    company_id?: number | null;
 }
 
 export interface JobWithAppliedCount extends Job {

@@ -1,7 +1,7 @@
 import { Application } from '@/types/models/application.model';
 import { ApiResponse, BaseService, PaginatedResponse, ServiceResult } from './base.service';
 
-export class ApplicationService extends BaseService {
+class ApplicationService extends BaseService {
     constructor() {
         super('/application');
     }

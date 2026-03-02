@@ -23,7 +23,6 @@ export interface ApiResponse<T> {
     success: boolean;
     message: string;
     data: T;
-    error?: any;
 }
 
 export interface PaginatedResponse<T> {

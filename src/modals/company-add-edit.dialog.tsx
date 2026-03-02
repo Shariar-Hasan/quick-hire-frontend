@@ -1,8 +1,8 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ImageIcon, Loader2, Plus, Upload } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -23,9 +23,13 @@ import {
 } from '@/components/ui/select'
 import { companyService } from '@/services/company.service'
 import { locationService } from '@/services/location.service'
+import { uploadService } from '@/services/upload.service'
 import { Company, CompanySize } from '@/types/models/company.model'
 import { DropDownType } from '@/types/table-types'
 import LocationAddEditDialog from './location-add-edit.dialog'
+import { Env } from '@/constants/env.constant'
+
+const API_BASE = Env.API_URL.replace('/api', '')
 
 const companySizeLabels: Record<CompanySize, string> = {
   STARTUP: 'Startup (1–10)',
@@ -39,7 +43,7 @@ const companySchema = z.object({
   name: z.string().min(1, 'Company name is required'),
   description: z.string().optional(),
   website: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  logo_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  logo_url: z.string().optional(),
   industry: z.string().optional(),
   size: z.nativeEnum(CompanySize).optional(),
   location_id: z.number().optional(),
@@ -63,6 +67,9 @@ export default function CompanyAddEditDialog({
   const isEdit = !!initialData
   const [locations, setLocations] = useState<DropDownType[]>([])
   const [locationDialogOpen, setLocationDialogOpen] = useState(false)
+  const [logoPreview, setLogoPreview] = useState<string>('')
+  const [logoUploading, setLogoUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const {
     control,
@@ -100,8 +107,24 @@ export default function CompanyAddEditDialog({
         size: initialData?.size ?? undefined,
         location_id: initialData?.location_id ?? undefined,
       })
+      setLogoPreview(initialData?.logo_url ?? '')
     }
   }, [open, initialData, reset])
+
+  const handleLogoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    // Show local preview immediately
+    setLogoPreview(URL.createObjectURL(file))
+    setLogoUploading(true)
+    const { data, error } = await uploadService.uploadLogo(file)
+    setLogoUploading(false)
+    if (error || !data?.data?.url) {
+      setLogoPreview('')
+      return
+    }
+    setValue('logo_url', data.data.url)
+  }
 
   const onSubmit = async (values: CompanyFormValues) => {
     const payload = {
@@ -136,7 +159,43 @@ export default function CompanyAddEditDialog({
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-            {/* Name */}
+            {/* Logo Upload */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Company Logo</label>
+              <div className="flex items-center gap-4">
+                <div className="h-16 w-16 rounded-lg border bg-muted flex items-center justify-center overflow-hidden shrink-0">
+                  {logoPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={logoPreview.startsWith('blob:') ? logoPreview : `${API_BASE}${logoPreview}`} alt="Logo preview" className="h-full w-full object-cover" />
+                  ) : (
+                    <ImageIcon className="h-7 w-7 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={logoUploading}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {logoUploading ? (
+                      <><Loader2 className="h-4 w-4 animate-spin mr-2" />Uploading...</>
+                    ) : (
+                      <><Upload className="h-4 w-4 mr-2" />Upload Logo</>
+                    )}
+                  </Button>
+                  <p className="text-xs text-muted-foreground">PNG, JPG, WEBP up to 3 MB</p>
+                </div>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoFile}
+              />
+            </div>
             <div className="space-y-1">
               <label className="text-sm font-medium">Company Name *</label>
               <Controller

@@ -28,6 +28,8 @@ import { locationService } from '@/services/location.service'
 import { JobStatus, JobType, RemoteType } from '@/types/models/enum'
 import { DropDownType } from '@/types/table-types'
 import { Job } from '@/types/models/job.model'
+import { format } from 'date-fns'
+import { createRoute } from '@/lib/createRoute'
 
 // ─── Zod Schema ──────────────────────────────────────────────────────────────
 
@@ -93,6 +95,8 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false)
   const [locationDialogOpen, setLocationDialogOpen] = useState(false)
 
+  const isEdit = !!job?.id
+
   const {
     control,
     handleSubmit,
@@ -101,18 +105,18 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
   } = useForm({
     resolver: zodResolver(jobSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      job_type: undefined,
-      remote_type: undefined,
-      status: JobStatus.DRAFT,
-      company_id: undefined,
-      location_id: undefined,
-      salary_min: '',
-      salary_max: '',
-      currency: 'BDT' as const,
-      expires_at: '',
-      is_featured: false,
+      title: job?.title ?? '',
+      description: job?.description ?? '',
+      job_type: job?.job_type ?? undefined,
+      remote_type: job?.remote_type ?? undefined,
+      status: job?.status ?? JobStatus.DRAFT,
+      company_id: job?.company_id ?? undefined,
+      location_id: job?.location_id ?? undefined,
+      salary_min: job?.salary_min ?? '',
+      salary_max: job?.salary_max ?? '',
+      currency: (job?.currency as 'USD' | 'BDT') ?? 'BDT',
+      expires_at: job?.expires_at ? format(new Date(job.expires_at), 'yyyy-MM-dd') : '',
+      is_featured: job?.is_featured ?? false,
     },
   })
 
@@ -136,21 +140,24 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
       currency: values.currency || undefined,
     }
 
-    const { error } = await jobService.create(payload)
+    const { error } = isEdit
+      ? await jobService.update(job!.id, payload)
+      : await jobService.create(payload)
+
     if (error) {
-      toast.error('Failed to post job. Please try again.')
+      toast.error(isEdit ? 'Failed to update job. Please try again.' : 'Failed to post job. Please try again.')
       return
     }
-    toast.success('Job posted successfully!')
-    router.push('/dashboard/jobs')
+    toast.success(isEdit ? 'Job updated successfully!' : 'Job posted successfully!')
+    router.push(createRoute('/dashboard/jobs'))
   }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Post a New Job</h1>
+        <h1 className="text-2xl font-bold">{isEdit ? 'Edit Job' : 'Post a New Job'}</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Fill in the details below to create a new job listing.
+          {isEdit ? 'Update the details of your job listing.' : 'Fill in the details below to create a new job listing.'}
         </p>
       </div>
 
@@ -472,7 +479,7 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Posting...' : 'Post Job'}
+            {isSubmitting ? (isEdit ? 'Updating...' : 'Posting...') : (isEdit ? 'Update Job' : 'Post Job')}
           </Button>
         </div>
       </form>

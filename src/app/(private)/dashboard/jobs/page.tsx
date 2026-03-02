@@ -1,3 +1,329 @@
+'use client'
+
+import AppTable from "@/components/dashboard/AppTable";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { useQueryParams } from "@/hooks/use-query-params";
+import { createRoute } from "@/lib/createRoute";
+import { Parser } from "@/lib/htmlParser";
+import Str from "@/lib/str";
+import { companyService } from "@/services/company.service";
+import { jobService } from "@/services/job.service";
+import { locationService } from "@/services/location.service";
+import { Job, JobWithAppliedCount } from "@/types/models/job.model";
+import { AppTableColumn, DropDownType, PaginationTypes } from "@/types/table-types";
+import { FileInput, Link, Pencil, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+interface DropDownData {
+  sessions: DropDownType[];
+  subjects: DropDownType[];
+}
 export default function JobsPage() {
-  return <h1>Jobs Page - Browse all available jobs</h1>;
+
+  const { queryParams, setOptions, options } = useQueryParams<JobWithAppliedCount>({
+    search: "",
+    page: 1,
+    limit: 100,
+    sortBy: "id",
+    sortOrder: "ASC" as "ASC" | "DESC",
+    filters: {
+      companyId: [] as string[] | undefined,
+      sessionId: undefined as string[] | undefined,
+      status: [] as string[] | undefined,
+    },
+  });
+  const [dropdowns, setDropdowns] = useState<DropDownData>({
+    sessions: [],
+    subjects: [],
+  });
+  const [jobs, setJobs] = useState<JobWithAppliedCount[]>([]);
+
+  const [load, setLoad] = useState({
+    getJobs: true,
+  });
+
+  const [total, setTotal] = useState(0);
+  const router = useRouter();
+
+  const getData = async () => {
+    try {
+      setLoad((prev) => ({ ...prev, getJobs: true }));
+      const { data, error } =
+        await jobService.findAllWithAppliedCount(queryParams);
+      if (!error) {
+        setJobs(data?.data.data || []);
+        setTotal(data?.data.meta.total || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+    } finally {
+      setLoad((prev) => ({ ...prev, getJobs: false }));
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  useEffect(() => {
+    const fetchConfigs = async () => {
+      const [sessionRes, subjectRes] = await Promise.all([
+        companyService.findAllForDropDown(),
+        locationService.findAllForDropDown(),
+      ]);
+      if (!sessionRes.error) {
+        setDropdowns((prev) => ({
+          ...prev,
+          sessions: sessionRes.data?.data || [],
+        }));
+      }
+      if (!subjectRes.error)
+        setDropdowns((prev) => ({ ...prev, subjects: subjectRes.data?.data || [] }));
+    };
+    fetchConfigs();
+  }, []);
+
+  const columns: AppTableColumn<JobWithAppliedCount>[] = [
+    {
+      label: "Title",
+      labelClass: "max-w-[200px]",
+      cellClass: "max-w-[200px]",
+      render: (row) => (
+        <div>
+          {Parser.html2text(row.title, {
+            wordCount: 5,
+          })}
+        </div>
+      ),
+    },
+    {
+      label: "Job type",
+      cellClass: "text-center",
+      render: (row) => (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {Str.caseConverter(row.job_type, { from: "snake", to: "normal" }) || "N/A"}
+          </span>
+        </div>
+      ),
+    },
+    {
+      label: "Status",
+      cellClass: "text-center",
+      render: (row) => (
+        <Badge variant={"default"}>
+          {Str.capitalize(
+            Str.caseConverter(row.status, { from: "snake", to: "normal" }),
+          )}
+        </Badge>
+      ),
+    },
+    {
+      label: "Actions",
+      labelClass: "text-right",
+      cellClass: "text-right",
+      render: (row) => (
+        <AppTable.RowAction
+          type="inline"
+          menuItems={[
+            {
+              label: "Edit Details",
+              icon: <Pencil className="h-4 w-4 text-cyan-900" />,
+              onClick: () => {
+                router.push(createRoute("/dashboard/jobs/:id", {
+                  params: { id: row.job_id },
+                }))
+              },
+            },
+            {
+              label: "Delete Job",
+              icon: <Trash className="h-4 w-4 text-red-500" />,
+              onClick: () => {
+                router.push(createRoute("/dashboard/jobs/:id", {
+                  params: { id: row.job_id },
+                }))
+              },
+            },
+          ]}
+        />
+      ),
+    },
+  ];
+  return (<AppTable>
+    <div className="sm:flex justify-between px-6 mb-3 w-full">
+      <AppTable.FilterItem
+        type="text"
+        debounce
+        delay={600}
+        onChange={(val) =>
+          setOptions((prev) => ({ ...prev, search: val, page: 1 }))
+        }
+        placeholder="Search jobs..."
+        className="w-37.5"
+        clearable
+        onClear={() =>
+          setOptions((prev) => ({ ...prev, search: "", page: 1 }))
+        }
+      />
+      <div className="sm:flex items-center gap-2">
+        <AppTable.FilterItem
+          type="multi-select"
+          options={dropdowns.sessions?.map((item) => ({
+            label: item.label,
+            value: item.id.toString(),
+          }))}
+          onChange={(val) =>
+            setOptions((prev) => ({
+              ...prev,
+              page: 1,
+              filters: {
+                ...prev.filters,
+                sessionId: val || undefined,
+              },
+            }))
+          }
+          placeholder="Select Company"
+          className="w-37.5"
+          clearable={false}
+          value={options.filters.sessionId}
+          onClear={() =>
+            setOptions((prev) => ({
+              ...prev,
+              filters: {
+                ...prev.filters,
+                sessionId: [],
+                page: 1,
+              },
+            }))
+          }
+        />
+        <AppTable.FilterItem
+          type="multi-select"
+          options={dropdowns.subjects?.map((item) => ({
+            label: item.label,
+            value: item.id.toString(),
+          }))}
+          onChange={(val) => {
+            setOptions((prev) => ({
+              ...prev,
+              filters: {
+                ...prev.filters,
+                subjectId: val || undefined,
+              },
+            }));
+          }}
+          placeholder="Select Location"
+          className="w-37.5"
+          value={options.filters.subjectId}
+          onClear={() =>
+            setOptions((prev) => ({
+              ...prev,
+              filters: {
+                ...prev.filters,
+                subjectId: [],
+                page: 1,
+              },
+            }))
+          }
+        />
+        <AppTable.Button
+          type="add"
+          title="Add Job"
+          onClick={() => {
+            router.push(createRoute("/dashboard/jobs/post"))
+          }}
+        />
+        <AppTable.Button
+          type="refresh"
+          title="Refresh Jobs"
+          onClick={getData}
+        />
+      </div>
+    </div>
+    <div className="flex justify-between items-center mb-4 px-6 w-full">
+      <AppTable.PaginationDetail
+        page={options.page}
+        limit={options.limit}
+        total={total}
+      >
+        {({ itemStart, itemEnd, total }) => (
+          <span className="text-sm text-muted-foreground">
+            Showing {itemStart} - {itemEnd} of {total} jobs
+          </span>
+        )}
+      </AppTable.PaginationDetail>
+
+      <div className="flex items-center gap-2">
+        <AppTable.Limit
+          limit={options.limit}
+          onLimitChange={(limit) =>
+            setOptions((prev) => ({ ...prev, limit, page: 1 }))
+          }
+          limitOptions={[5, 10, 20, 50, 100]}
+        />
+        <AppTable.Pagination
+          limit={options.limit}
+          total={total}
+          page={options.page}
+          onPageChange={(page) => setOptions((prev) => ({ ...prev, page }))}
+        />
+      </div>
+    </div>
+
+    <AppTable.Body
+      columns={columns}
+      datalist={jobs}
+      loading={load.getJobs}
+      onRowClick={(row) =>
+        router.push(
+          createRoute("/dashboard/jobs/:id", {
+            params: {
+              id: row.job_id,
+            },
+          }),
+        )
+      }
+      sortOptions={{
+        sortBy: options.sortBy,
+        sortOrder: options.sortOrder,
+        onSortChange: (sortBy, sortOrder) =>
+          setOptions((prev) => ({
+            ...prev,
+            sortBy: sortBy ,
+            sortOrder,
+          })),
+      }}
+    />
+
+    <div className="flex justify-between items-center mb-4 px-6 w-full">
+      <AppTable.PaginationDetail
+        page={options.page}
+        limit={options.limit}
+        total={total}
+      >
+        {({ itemStart, itemEnd, total }) => (
+          <span className="text-sm text-muted-foreground">
+            Showing {itemStart} - {itemEnd} of {total} jobs
+          </span>
+        )}
+      </AppTable.PaginationDetail>
+
+      <div className="flex items-center gap-2">
+        <AppTable.Limit
+          limit={options.limit}
+          onLimitChange={(limit) =>
+            setOptions((prev) => ({ ...prev, limit, page: 1 }))
+          }
+          limitOptions={[5, 10, 20, 50, 100]}
+        />
+        <AppTable.Pagination
+          limit={options.limit}
+          total={total}
+          page={options.page}
+          onPageChange={(page) => setOptions((prev) => ({ ...prev, page }))}
+        />
+      </div>
+    </div>
+  </AppTable>);
 }

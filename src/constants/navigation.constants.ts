@@ -1,4 +1,4 @@
-import { Briefcase, FileText, LayoutDashboard, PlusCircle, UserCircle } from "lucide-react";
+import { Briefcase, Building2, FileText, LayoutDashboard, MapPin, PlusCircle, Users } from "lucide-react";
 
 export const dashboard_nav_links = [
     {
@@ -17,8 +17,23 @@ export const dashboard_nav_links = [
         icon: PlusCircle,
     },
     {
-        title: "All Applications",
+        title: "Applications",
         href: "/dashboard/applications",
         icon: FileText,
+    },
+    {
+        title: "Companies",
+        href: "/dashboard/companies",
+        icon: Building2,
+    },
+    {
+        title: "Locations",
+        href: "/dashboard/locations",
+        icon: MapPin,
+    },
+    {
+        title: "Users",
+        href: "/dashboard/users",
+        icon: Users,
     },
 ];

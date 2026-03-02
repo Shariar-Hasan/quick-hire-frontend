@@ -27,9 +27,7 @@ import { uploadService } from '@/services/upload.service'
 import { Company, CompanySize } from '@/types/models/company.model'
 import { DropDownType } from '@/types/table-types'
 import LocationAddEditDialog from './location-add-edit.dialog'
-import { Env } from '@/constants/env.constant'
-
-const API_BASE = Env.API_URL.replace('/api', '')
+import { logoUrl } from '@/lib/logo-url'
 
 const companySizeLabels: Record<CompanySize, string> = {
   STARTUP: 'Startup (1–10)',
@@ -166,7 +164,7 @@ export default function CompanyAddEditDialog({
                 <div className="h-16 w-16 rounded-lg border bg-muted flex items-center justify-center overflow-hidden shrink-0">
                   {logoPreview ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={logoPreview.startsWith('blob:') ? logoPreview : `${API_BASE}${logoPreview}`} alt="Logo preview" className="h-full w-full object-cover" />
+                    <img src={logoUrl(logoPreview)} alt="Logo preview" className="h-full w-full object-cover" />
                   ) : (
                     <ImageIcon className="h-7 w-7 text-muted-foreground" />
                   )}

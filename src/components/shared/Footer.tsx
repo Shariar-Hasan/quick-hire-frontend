@@ -1,5 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -8,7 +10,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Column */}
           <div>
-            <h3 className="text-xl font-bold mb-4">QuickHire</h3>
+            <Image width={120} height={40} src="/full_logo.png" alt="QuickHire Logo" className='mb-2'/>
             <p className="text-gray-400 text-sm">
               Great platform for the job seeker that passionate about startups. Find your dream job easier.
             </p>
@@ -19,9 +21,9 @@ const Footer = () => {
             <h4 className="font-semibold mb-4">About</h4>
             <ul className="space-y-2 text-gray-400">
               <li><Link href="/companies" className="hover:text-white">Companies</Link></li>
-              <li><Link href="/pricing" className="hover:text-white">Pricing</Link></li>
-              <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
-              <li><Link href="/advice" className="hover:text-white">Advice</Link></li>
+              <li><Link href="#" className="hover:text-white">Pricing</Link></li>
+              <li><Link href="/#" className="hover:text-white">Terms</Link></li>
+              <li><Link href="/#" className="hover:text-white">Advice</Link></li>
             </ul>
           </div>
 
@@ -29,10 +31,10 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Resources</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><Link href="/help-docs" className="hover:text-white">Help Docs</Link></li>
-              <li><Link href="/guide" className="hover:text-white">Guide</Link></li>
-              <li><Link href="/updates" className="hover:text-white">Updates</Link></li>
-              <li><Link href="/contact" className="hover:text-white">Contact Us</Link></li>
+              <li><Link href="/#" className="hover:text-white">Help Docs</Link></li>
+              <li><Link href="/#" className="hover:text-white">Guide</Link></li>
+              <li><Link href="/#" className="hover:text-white">Updates</Link></li>
+              <li><Link href="/#" className="hover:text-white">Contact Us</Link></li>
             </ul>
           </div>
 
@@ -42,13 +44,13 @@ const Footer = () => {
             <p className="text-gray-400 text-sm mb-4">
               The latest job news, articles, sent to your inbox weekly.
             </p>
-            <div className="flex">
+            <div className="flex gap-2">
               <input
                 type="email"
                 placeholder="Email Address"
-                className="flex-1 px-3 py-2 rounded-l-lg text-gray-900 focus:outline-none"
+                className="flex-1 px-3 py-2  text-gray-900  outline-white! bg-white border-white! focus:ring-1 focus:ring-white"
               />
-              <button className="bg-blue-600 px-4 py-2 rounded-r-lg hover:bg-blue-700 transition">
+              <button className="bg-primary px-4 py-2  hover:bg-primary/90 transition">
                 Subscribe
               </button>
             </div>
@@ -56,8 +58,14 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm flex flex-col md:flex-row items-center justify-between gap-4">
           <p>2021 © QuickHire. All rights reserved.</p>
+          <div className='flex gap-4 justify-around'>
+            <Facebook className="h-6 w-6 mx-auto mt-2 text-gray-400 hover:text-white transition-colors cursor-pointer bg-gray-900 rounded-full inline-block" />
+            <Twitter className="h-6 w-6 mx-auto mt-2 text-gray-400 hover:text-white transition-colors cursor-pointer bg-gray-900 rounded-full inline-block" />
+            <Instagram className="h-6 w-6 mx-auto mt-2 text-gray-400 hover:text-white transition-colors cursor-pointer bg-gray-900 rounded-full inline-block" />
+            <Linkedin className="h-6 w-6 mx-auto mt-2 text-gray-400 hover:text-white transition-colors cursor-pointer bg-gray-900 rounded-full inline-block" />
+          </div>
         </div>
       </div>
     </footer>

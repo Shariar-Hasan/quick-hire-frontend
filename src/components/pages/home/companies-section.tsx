@@ -3,24 +3,23 @@ import Image from 'next/image';
 
 const CompaniesSection = () => {
   const companies = [
-    { name: 'vodafone', icon: '📱' },
-    { name: 'intel', icon: '💻' },
-    { name: 'TEL', icon: '📞' },
-    { name: 'AMD', icon: '⚡' },
-    { name: 'Talkit', icon: '💬' },
+    { name: 'vodafone', imgSrc: '/support-company/vodaphone.png' },
+    { name: 'intel', imgSrc: '/support-company/intel.png' },
+    { name: 'Tesla', imgSrc: '/support-company/tesla.png' },
+    { name: 'AMD', imgSrc: '/support-company/amd.png' },
+    { name: 'Talkit', imgSrc: '/support-company/talkit.png' },
   ];
 
   return (
     <section className="bg-gray-50 px-6 py-12">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-8 text-center">
+        <h2 className="text-lg mb-8 text-left text-gray-400/70">
           Companies we helped grow
         </h2>
-        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+        <div className="flex flex-wrap justify-between items-center gap-8 md:gap-16">
           {companies.map((company) => (
             <div key={company.name} className="flex items-center space-x-2">
-              <span className="text-3xl">{company.icon}</span>
-              <span className="text-xl font-medium text-gray-600">{company.name}</span>
+              <Image title={company.name} src={company.imgSrc} alt={company.name} width={100} height={25} />
             </div>
           ))}
         </div>

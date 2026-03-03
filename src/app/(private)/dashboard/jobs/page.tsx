@@ -19,26 +19,24 @@ import { FileInput, Link, Pencil, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 interface DropDownData {
-  sessions: DropDownType[];
-  subjects: DropDownType[];
+  companies: DropDownType[];
+  locations: DropDownType[];
 }
 export default function JobsPage() {
   const confirm = useConfirm()
   const { queryParams, setOptions, options } = useQueryParams<JobWithAppliedCount>({
     search: "",
     page: 1,
-    limit: 100,
-    sortBy: "id",
-    sortOrder: "ASC" as "ASC" | "DESC",
-    filters: {
-      companyId: [] as string[] | undefined,
-      sessionId: undefined as string[] | undefined,
-      status: [] as string[] | undefined,
-    },
+    limit: 10,
+    sortBy: "created_at",
+    sortOrder: "DESC" as "ASC" | "DESC",
+    company_id: undefined as string | undefined,
+    location_id: undefined as string | undefined,
+    status: undefined as string | undefined,
   });
   const [dropdowns, setDropdowns] = useState<DropDownData>({
-    sessions: [],
-    subjects: [],
+    companies: [],
+    locations: [],
   });
   const [jobs, setJobs] = useState<JobWithAppliedCount[]>([]);
 
@@ -68,25 +66,26 @@ export default function JobsPage() {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [queryParams]);
 
   useEffect(() => {
     const fetchConfigs = async () => {
-      const [sessionRes, subjectRes] = await Promise.all([
+      const [companyRes, locationRes] = await Promise.all([
         companyService.findAllForDropDown(),
         locationService.findAllForDropDown(),
       ]);
-      if (!sessionRes.error) {
+      if (!companyRes.error) {
         setDropdowns((prev) => ({
           ...prev,
-          sessions: sessionRes.data?.data || [],
+          companies: companyRes.data?.data || [],
         }));
       }
-      if (!subjectRes.error)
-        setDropdowns((prev) => ({ ...prev, subjects: subjectRes.data?.data || [] }));
+      if (!locationRes.error)
+        setDropdowns((prev) => ({ ...prev, locations: locationRes.data?.data || [] }));
     };
     fetchConfigs();
   }, []);
+
   const handleDelete = async (job: JobWithAppliedCount) => {
     if (!await confirm({
       title: "Delete Job",
@@ -108,6 +107,7 @@ export default function JobsPage() {
       setLoad((prev) => ({ ...prev, delete: false }));
     }
   }
+
   const columns: AppTableColumn<JobWithAppliedCount>[] = [
     {
       label: 'Company',
@@ -221,8 +221,8 @@ export default function JobsPage() {
       />
       <div className="sm:flex items-center gap-2">
         <AppTable.FilterItem
-          type="multi-select"
-          options={dropdowns.sessions?.map((item) => ({
+          type="select"
+          options={dropdowns.companies?.map((item) => ({
             label: item.label,
             value: item.id.toString(),
           }))}
@@ -230,53 +230,43 @@ export default function JobsPage() {
             setOptions((prev) => ({
               ...prev,
               page: 1,
-              filters: {
-                ...prev.filters,
-                sessionId: val || undefined,
-              },
+              company_id: val || undefined,
             }))
           }
-          placeholder="Select Company"
+          placeholder="Filter by Company"
           className="w-37.5"
-          clearable={false}
-          value={options.filters.sessionId}
+          clearable
+          value={options.company_id}
           onClear={() =>
             setOptions((prev) => ({
               ...prev,
-              filters: {
-                ...prev.filters,
-                sessionId: [],
-                page: 1,
-              },
+              page: 1,
+              company_id: undefined,
             }))
           }
         />
         <AppTable.FilterItem
-          type="multi-select"
-          options={dropdowns.subjects?.map((item) => ({
+          type="select"
+          options={dropdowns.locations?.map((item) => ({
             label: item.label,
             value: item.id.toString(),
           }))}
           onChange={(val) => {
             setOptions((prev) => ({
               ...prev,
-              filters: {
-                ...prev.filters,
-                subjectId: val || undefined,
-              },
+              page: 1,
+              location_id: val || undefined,
             }));
           }}
-          placeholder="Select Location"
+          placeholder="Filter by Location"
           className="w-37.5"
-          value={options.filters.subjectId}
+          clearable
+          value={options.location_id}
           onClear={() =>
             setOptions((prev) => ({
               ...prev,
-              filters: {
-                ...prev.filters,
-                subjectId: [],
-                page: 1,
-              },
+              page: 1,
+              location_id: undefined,
             }))
           }
         />

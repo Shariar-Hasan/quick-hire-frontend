@@ -18,7 +18,6 @@ export default function Home() {
       <CategoriesSection />
       <FeaturedJobs />
       <LatestJobs />
-      <Dashboard />
       <PostingCTA />
       <Footer />
     </main>

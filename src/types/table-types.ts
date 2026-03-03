@@ -10,7 +10,8 @@ export interface PaginationTypes<T> {
     limit: number;
     sortBy: SortByType<T>;
     sortOrder: 'ASC' | 'DESC';
-    filters: Record<keyof T | string, any>;
+    filters?: Record<keyof T | string, any>;
+    [key: string]: any;
 }
 export interface DropDownType {
     label: string;

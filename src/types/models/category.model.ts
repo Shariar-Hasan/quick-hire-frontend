@@ -7,4 +7,7 @@ export interface Category extends BaseModel {
     slug: string;
     logo_url?: string | null;
     is_featured?: boolean;
+    _count?: {
+        jobs: number;
+    };
 }

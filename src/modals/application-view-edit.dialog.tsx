@@ -23,7 +23,9 @@ import {
 import { applicationService } from '@/services/application.service'
 import { ApplicationStatus } from '@/types/models/enum'
 import { Application } from '@/types/models/application.model'
+import { Asset } from '@/lib/asset'
 import Str from '@/lib/str'
+import { Download, ExternalLink, FileText } from 'lucide-react'
 
 const statusSchema = z.object({
   status: z.nativeEnum(ApplicationStatus),
@@ -107,16 +109,51 @@ export default function ApplicationViewEditDialog({ open, onOpenChange, applicat
               <p className="text-xs text-muted-foreground">Email</p>
               <p className="font-medium break-all">{application.applicant_email}</p>
             </div>
-            <div className="space-y-0.5 col-span-2">
+            <div className="col-span-2 space-y-1.5">
               <p className="text-xs text-muted-foreground">Resume</p>
-              <a
-                href={application.resume_url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary underline underline-offset-2 text-sm break-all"
-              >
-                {application.resume_url}
-              </a>
+              {application.resume_url ? (() => {
+                const fullUrl = Asset.resumeUrl(application.resume_url)
+                const fileName = application.resume_url.split('/').pop() ?? 'resume.pdf'
+                return (
+                  <div className="flex items-center gap-3 border rounded-md px-3 py-2.5 bg-muted/40">
+                    {/* PDF icon */}
+                    <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded bg-red-100 text-red-600">
+                      <FileText className="h-5 w-5" />
+                    </div>
+
+                    {/* Filename */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{decodeURIComponent(fileName)}</p>
+                      <p className="text-xs text-muted-foreground">PDF Document</p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1 shrink-0">
+                      <a
+                        href={fullUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        title="Open in new tab"
+                      >
+                        <Button type="button" variant="ghost" size="icon" className="h-8 w-8">
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                      </a>
+                      <a
+                        href={fullUrl}
+                        download={decodeURIComponent(fileName)}
+                        title="Download"
+                      >
+                        <Button type="button" variant="ghost" size="icon" className="h-8 w-8">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </a>
+                    </div>
+                  </div>
+                )
+              })() : (
+                <p className="text-sm text-muted-foreground italic">No resume uploaded</p>
+              )}
             </div>
             {application.cover_letter && (
               <div className="col-span-2 space-y-0.5">

@@ -4,6 +4,7 @@ type BuildUrlOptions = {
 };
 
 const routes = {
+    "/": "/",
     "/login": "/login",
     "/logout": "/logout",
     "/register": "/register",
@@ -12,6 +13,8 @@ const routes = {
 
     "/jobs": "/jobs",
     "/jobs/:id": "/jobs/:id",
+    "/jobs/:id/apply": "/jobs/:id/apply",
+    "/comapny": "/comapny",
 
     // Dashboard routes
     "/dashboard": "/dashboard",

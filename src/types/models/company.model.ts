@@ -20,11 +20,15 @@ export interface Company extends BaseModel {
     industry?: string | null;
     size?: CompanySize | null;
 
-    employer_id: number;
+    employer_id?: number | null;
     employer?: User | null;
 
     location_id?: number | null;
     location?: Location | null;
 
     jobs?: Job[];
+
+    _count?: {
+        jobs: number;
+    };
 }

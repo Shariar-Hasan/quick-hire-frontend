@@ -22,8 +22,9 @@ import {
   Wifi,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
+import { createRoute } from '@/lib/createRoute'
 
 const jobTypeLabel: Record<JobType, string> = {
   FULL_TIME: 'Full Time',
@@ -46,7 +47,7 @@ function formatSalary(min?: number | null, max?: number | null, currency?: strin
   return 'Not specified'
 }
 
-function SidebarItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function SidebarItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3">
       <span className="mt-0.5 text-muted-foreground shrink-0">{icon}</span>
@@ -62,7 +63,8 @@ export default function JobDetailsPage() {
   const { jobId } = useParams<{ jobId: string }>()
   const [job, setJob] = useState<Job | null>(null)
   const [loading, setLoading] = useState(true)
-  const [notFound, setNotFound] = useState(false)
+  const [notFound, setNotFound] = useState(false);
+  const router = useRouter( )
 
   useEffect(() => {
     jobService.findByJobId(jobId).then(({ data, error }) => {
@@ -96,9 +98,9 @@ export default function JobDetailsPage() {
   const salary = formatSalary(job.salary_min, job.salary_max, job.currency)
   const companyName = job.company?.name ?? job.employer?.name ?? 'Unknown Company'
   const expires = job.expires_at ? new Date(job.expires_at).toLocaleDateString() : null
-
+  const isExpired = job.expires_at ? new Date(job.expires_at) < new Date() : false
   return (
-    <div className="container mx-auto px-4 py-10 max-w-6xl">
+    <div className="container mx-auto px-0 py-10 max-w-7xl">
       {/* Breadcrumb */}
       <div className="text-sm text-muted-foreground mb-6">
         <Link href="/jobs" className="hover:underline">Jobs</Link>
@@ -167,7 +169,7 @@ export default function JobDetailsPage() {
         </div>
 
         {/* ── Sidebar (1 col) ── */}
-        <div className="col-span-4 md:col-span-1 space-y-4">
+        <div className="col-span-4 md:col-span-1 space-y-4 sticky top-0">
           <div className="rounded-xl border bg-card p-5 space-y-4 sticky top-24">
             <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">Job Overview</h3>
             <Separator />
@@ -200,18 +202,20 @@ export default function JobDetailsPage() {
               <SidebarItem
                 icon={<Calendar className="h-4 w-4" />}
                 label="Deadline"
-                value={expires}
+                value={isExpired ? <span className="text-red-500">Expired </span> : expires}
               />
             )}
 
             <Separator />
 
-            <Button asChild className="w-full" size="lg" disabled={job.status !== 'PUBLISHED'}>
-              <Link href={`/jobs/${job.job_id}/apply`}>Apply Now</Link>
+            <Button onClick={() => {
+              router.push(createRoute('/jobs/:id/apply', { params: { id: job.job_id } }))
+            }} className="w-full" size="lg" disabled={job.status !== 'PUBLISHED' || isExpired}>
+              Apply Now
             </Button>
 
             <Button asChild variant="outline" className="w-full" size="sm">
-              <Link href="/jobs">← Back to Jobs</Link>
+              <Link href={createRoute("/jobs")}>← Back to Jobs</Link>
             </Button>
           </div>
         </div>

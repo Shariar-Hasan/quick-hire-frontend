@@ -1,26 +1,24 @@
-'use client'
-
 import JobCard from '@/components/shared/JobCard'
-import { jobService } from '@/services/job.service'
 import { Job } from '@/types/models/job.model'
-import { Briefcase } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 
-export default function FeaturedJobs() {
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [loading, setLoading] = useState(true)
+async function getFeaturedJobs(): Promise<Job[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api'
+    const res = await fetch(
+      `${apiUrl}/job?page=1&limit=8&status=PUBLISHED&is_featured=true`,
+      { cache: 'no-store' }
+    )
+    const json = await res.json()
+    return json.data?.data ?? []
+  } catch {
+    return []
+  }
+}
 
-  useEffect(() => {
-    jobService
-      .findAll({ page: 1, limit: 6, status: 'PUBLISHED', is_featured: true })
-      .then(({ data, error }) => {
-        if (!error) setJobs(data?.data.data ?? [])
-      })
-      .finally(() => setLoading(false))
-  }, [])
-
-  if (!loading && jobs.length === 0) return null
+export default async function FeaturedJobs() {
+  const jobs = await getFeaturedJobs()
+  if (jobs.length === 0) return null
 
   return (
     <section className="bg-gray-50 px-6 py-16">
@@ -28,23 +26,15 @@ export default function FeaturedJobs() {
         <div className="flex items-center justify-between mb-10">
           <h2 className="text-3xl font-bold text-gray-900">Featured jobs</h2>
           <Link href="/jobs" className="text-sm font-medium text-primary hover:underline">
-            View all →
+            View all jobs →
           </Link>
         </div>
 
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-xl border bg-card p-5 animate-pulse h-48" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {jobs.map((job) => (
+            <JobCard key={job.id} job={job} />
+          ))}
+        </div>
       </div>
     </section>
   )

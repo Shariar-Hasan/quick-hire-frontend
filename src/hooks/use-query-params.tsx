@@ -3,12 +3,11 @@ import { useMemo, useState } from "react";
 
 /**
  * useQueryParams
- * 
- * Filters an object to remove empty or nullish values
- * and stringifies nested objects for safe URL use.
  *
- * @param options The raw options object to transform
- * @returns A memoized object of valid query parameters
+ * Transforms options into flat query params:
+ * - Removes empty/nullish values and empty arrays
+ * - Spreads nested `filters` object as flat keys (instead of JSON-stringifying)
+ * - JSON-stringifies any other nested objects
  */
 export function useQueryParams<T extends Record<string, any>>(options: PaginationTypes<T>): {
     queryParams: Record<string, any>;
@@ -17,14 +16,27 @@ export function useQueryParams<T extends Record<string, any>>(options: Paginatio
 } {
     const [optionsState, setOptionsState] = useState(options);
     const queryParams: Record<string, any> = useMemo(() => {
-        return Object.fromEntries(
-            Object.entries(optionsState)
-                .filter(([, v]) => v !== "" && v !== undefined && v !== null)
-                .map(([k, v]) => [
-                    k,
-                    typeof v === "object"  ? JSON.stringify(v) : v
-                ])
-        );
+        const result: Record<string, any> = {};
+        for (const [k, v] of Object.entries(optionsState)) {
+            if (v === "" || v === undefined || v === null) continue;
+            if (Array.isArray(v) && v.length === 0) continue;
+
+            if (k === 'filters' && v !== null && typeof v === 'object' && !Array.isArray(v)) {
+                // Spread filter fields as flat query params
+                for (const [fk, fv] of Object.entries(v as Record<string, any>)) {
+                    if (fv === "" || fv === undefined || fv === null) continue;
+                    if (Array.isArray(fv) && fv.length === 0) continue;
+                    result[fk] = Array.isArray(fv) ? fv.join(',') : fv;
+                }
+            } else if (typeof v === 'object' && !Array.isArray(v)) {
+                result[k] = JSON.stringify(v);
+            } else if (Array.isArray(v)) {
+                result[k] = v.join(',');
+            } else {
+                result[k] = v;
+            }
+        }
+        return result;
     }, [optionsState]);
 
     return {

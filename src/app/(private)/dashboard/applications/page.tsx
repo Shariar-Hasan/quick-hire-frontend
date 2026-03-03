@@ -72,7 +72,7 @@ export default function ApplicationsPage() {
         row.job
           ? <div>
               <p className="font-medium text-sm leading-tight">{row.job.title}</p>
-              <p className="text-xs text-muted-foreground">{Str.caseConverter(row.job.job_type, { from: 'snake', to: 'normal' })}</p>
+              <p className="text-xs text-muted-foreground">{Str.caseConverter(row.job.job_type || '', { from: 'snake', to: 'normal' })}</p>
             </div>
           : <span className="text-muted-foreground">—</span>,
     },

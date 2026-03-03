@@ -1,5 +1,13 @@
 import { Job, JobWithAppliedCount } from '@/types/models/job.model';
+import { Application } from '@/types/models/application.model';
 import { ApiResponse, BaseService, PaginatedResponse, ServiceResult } from './base.service';
+
+export interface DashboardAnalytics {
+    jobs: { total: number; published: number; draft: number; closed: number };
+    applications: { total: number; applied: number; shortlisted: number; rejected: number; hired: number };
+    recentApplications: (Application & { job: Pick<Job, 'id' | 'title' | 'job_id' | 'job_type'> | null })[];
+    topJobs: { id: number; title: string; job_id: string; status: string; company: { name: string } | null; applications_count: number }[];
+}
 
 class JobService extends BaseService {
     constructor() {
@@ -53,6 +61,13 @@ class JobService extends BaseService {
      */
     async remove(id: number): Promise<ServiceResult<void>> {
         return this.delete(`/${id}`);
+    }
+
+    /**
+     * Get dashboard analytics (admin/employer)
+     */
+    async getAnalytics(): Promise<ServiceResult<ApiResponse<DashboardAnalytics>>> {
+        return this.get('/analytics');
     }
 }
 

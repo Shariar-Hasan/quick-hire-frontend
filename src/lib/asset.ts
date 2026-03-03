@@ -6,17 +6,13 @@ export abstract class Asset {
     static logoUrl(url?: string | null) {
         if (!url) return ''
         if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:')) return url
-        // Backend returns full relative paths like /uploads/logos/file.jpg
-        if (url.startsWith('/uploads/')) return this.assetUrl + url
-        return this.combineUrls('/uploads/logos', url)
+        return this.combineUrls('', url)
     }
 
     static resumeUrl(url?: string | null) {
         if (!url) return ''
         if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:')) return url
-        // Backend returns full relative paths like /uploads/resumes/file.pdf
-        if (url.startsWith('/uploads/')) return this.assetUrl + url
-        return this.combineUrls('/uploads/resumes', url)
+        return this.combineUrls('', url)
     }
 
     private static combineUrls(base: string, path: string): string {

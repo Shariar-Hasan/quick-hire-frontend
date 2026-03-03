@@ -3,6 +3,50 @@
 @plugin "@tailwindcss/typography";
 @import "shadcn/tailwind.css";
 
+/* ── ClashDisplay ──────────────────────────────────── */
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Extralight.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -10,8 +54,9 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-clash), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
+  --font-clash: var(--font-clash);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

@@ -48,8 +48,8 @@ export default function JobCard({ job, isLatest }: JobCardProps) {
     return (
         <Link
             href={`/jobs/${job.job_id}`}
-            className={cn(` gap-3 border border-border/70 bg-card p-4 hover:border-border hover:bg-primary/10 transition-colors flex flex-col`, {
-                "flex-row": isLatest
+            className={cn(` gap-3 border border-border/70 bg-card p-4 hover:border-border hover:bg-primary/10 hover:backdrop-blur  flex flex-col duration-150 transition-all`, {
+                "sm:flex-row": isLatest
             })}
         >
             {/* Left: company logo */}

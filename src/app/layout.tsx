@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import Navbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import AllProviders from "@/components/providers/all-providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const clashDisplay = localFont({
+  src: [
+    { path: '../../public/fonts/ClashDisplay-Extralight.otf', weight: '200' },
+    { path: '../../public/fonts/ClashDisplay-Light.otf',      weight: '300' },
+    { path: '../../public/fonts/ClashDisplay-Regular.otf',    weight: '400' },
+    { path: '../../public/fonts/ClashDisplay-Medium.otf',     weight: '500' },
+    { path: '../../public/fonts/ClashDisplay-Semibold.otf',   weight: '600' },
+    { path: '../../public/fonts/ClashDisplay-Bold.otf',       weight: '700' },
+  ],
+  variable: '--font-clash',
+  display: 'swap',
 });
 
 const geistMono = Geist_Mono({
@@ -30,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="light" style={{ colorScheme: "light" }}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${clashDisplay.variable} ${geistMono.variable} antialiased font-sans`}
       >
         <AllProviders>
           {children}

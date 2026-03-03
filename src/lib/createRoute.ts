@@ -2,6 +2,7 @@ type BuildUrlOptions = {
     params?: Record<string, string | number>;
     query?: { modal?: Record<string, any> } & Record<string, any>;
 };
+export type RoutesMapKey = keyof typeof routes
 
 const routes = {
     "/": "/",
@@ -14,7 +15,7 @@ const routes = {
     "/jobs": "/jobs",
     "/jobs/:id": "/jobs/:id",
     "/jobs/:id/apply": "/jobs/:id/apply",
-    "/comapny": "/comapny",
+    "/companies": "/companies",
 
     // Dashboard routes
     "/dashboard": "/dashboard",
@@ -68,7 +69,9 @@ const routes = {
  * });
  * // → "/custom/path/hello-world?debug=true"
  */
-export function createRoute(route: keyof typeof routes, options: BuildUrlOptions = {}): string {
+
+
+export function createRoute(route: RoutesMapKey, options: BuildUrlOptions = {}): string {
     // allow passing either a known route key or a raw path
     let finalRoute: string = (route && (route as keyof typeof routes) in routes) ? (routes as any)[route as keyof typeof routes] : String(route);
 

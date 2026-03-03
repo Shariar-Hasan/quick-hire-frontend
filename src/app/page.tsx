@@ -16,9 +16,9 @@ export default function Home() {
       <HeroSection />
       <CompaniesSection />
       <CategoriesSection />
+      <PostingCTA />
       <FeaturedJobs />
       <LatestJobs />
-      <PostingCTA />
       <Footer />
     </main>
   );

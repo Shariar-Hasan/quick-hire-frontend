@@ -21,11 +21,17 @@ export default async function LatestJobs() {
   const jobs = await getLatestJobs()
 
   return (
-    <section className="bg-white px-6 py-16">
+    <section className="bg-white px-6 py-16" 
+        style={{
+          backgroundImage: "url('/pattern.png')",
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-10">
-          <h2 className="text-3xl font-bold text-gray-900">Latest jobs open</h2>
-          <Link href="/jobs" className="text-sm font-medium text-primary hover:underline">
+          <h2 className="text-3xl font-bold text-gray-900">Latest <span className='text-blue-500'>job open</span></h2>
+          <Link href="/jobs" className="text-sm font-medium text-primary hover:underline hidden sm:inline-block">
             View all jobs →
           </Link>
         </div>
@@ -42,6 +48,12 @@ export default async function LatestJobs() {
             ))}
           </div>
         )}
+
+        <div className="flex items-center justify-between mt-10">
+          <Link href="/jobs" className="text-sm font-medium text-primary hover:underline sm:hidden inline-block">
+            View all jobs →
+          </Link>
+        </div>
       </div>
     </section>
   )

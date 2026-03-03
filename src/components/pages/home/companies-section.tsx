@@ -11,7 +11,7 @@ const CompaniesSection = () => {
   ];
 
   return (
-    <section className="bg-gray-50 px-6 py-12">
+    <section className=" px-6 py-12">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-lg mb-8 text-left text-gray-400/70">
           Companies we helped grow

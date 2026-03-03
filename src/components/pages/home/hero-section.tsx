@@ -12,13 +12,13 @@ const HeroSection = () => {
           {/* Left Content */}
           <div className="flex-1">
             {/* Discover Badge */}
-            <div className="inline-flex items-center bg-gray-100 rounded-full px-4 py-2 mb-6">
-              <span className="text-gray-600">Discover</span>
-              <span className="text-blue-600 font-bold ml-2">morethan</span>
+            <div className="text-5xl flex flex-col mb-6 text-gray-900 font-bold">
+              <span className="">Discover</span>
+              <span className="my-2">more than</span>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+            <h1 className="text-5xl md:text-6xl font-bold text-primary mb-4">
               5000+ Jobs
             </h1>
 

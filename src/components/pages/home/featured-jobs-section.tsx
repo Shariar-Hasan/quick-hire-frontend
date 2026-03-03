@@ -1,113 +1,51 @@
-import React from 'react';
-import Image from 'next/image';
+'use client'
 
-const FeaturedJobs = () => {
-  const jobs = [
-    {
-      company: 'Revolut',
-      logo: 'R',
-      position: 'Email Marketing',
-      location: 'Madrid, Spain',
-      type: 'Full Time',
-      tags: ['Marketing', 'Design'],
-      bgColor: 'bg-purple-100',
-    },
-    {
-      company: 'Dropbox',
-      logo: 'D',
-      position: 'Brand Designer',
-      location: 'San Fransisco, US',
-      type: 'Full Time',
-      tags: ['Design', 'Business'],
-      bgColor: 'bg-blue-100',
-    },
-    {
-      company: 'Pitch',
-      logo: 'P',
-      position: 'Email Marketing',
-      location: 'Berlin, Germany',
-      type: 'Full Time',
-      tags: ['Marketing', 'Design'],
-      bgColor: 'bg-green-100',
-    },
-    {
-      company: 'Blinklist',
-      logo: 'B',
-      position: 'Visual Designer',
-      location: 'Granada, Spain',
-      type: 'Full Time',
-      tags: ['Design', 'Technology'],
-      bgColor: 'bg-yellow-100',
-    },
-    {
-      company: 'ClassPass',
-      logo: 'C',
-      position: 'Product Designer',
-      location: 'Manchester, UK',
-      type: 'Full Time',
-      tags: ['Marketing', 'Design'],
-      bgColor: 'bg-red-100',
-    },
-    {
-      company: 'Canva',
-      logo: 'C',
-      position: 'Lead Designer',
-      location: 'Ontario, Canada',
-      type: 'Full Time',
-      tags: ['Design', 'Business'],
-      bgColor: 'bg-indigo-100',
-    },
-    {
-      company: 'GoDaddy',
-      logo: 'G',
-      position: 'Brand Strategist',
-      location: 'Marseille, France',
-      type: 'Full Time',
-      tags: ['Marketing', 'Technology'],
-      bgColor: 'bg-pink-100',
-    },
-  ];
+import JobCard from '@/components/shared/JobCard'
+import { jobService } from '@/services/job.service'
+import { Job } from '@/types/models/job.model'
+import { Briefcase } from 'lucide-react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+
+export default function FeaturedJobs() {
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    jobService
+      .findAll({ page: 1, limit: 6, status: 'PUBLISHED', is_featured: true })
+      .then(({ data, error }) => {
+        if (!error) setJobs(data?.data.data ?? [])
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (!loading && jobs.length === 0) return null
 
   return (
     <section className="bg-gray-50 px-6 py-16">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-gray-900 mb-10">Featured jobs</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {jobs.map((job, index) => (
-            <div key={index} className="bg-white p-6 rounded-xl hover:shadow-lg transition">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-12 h-12 ${job.bgColor} rounded-lg flex items-center justify-center text-xl font-bold text-gray-700`}>
-                    {job.logo}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{job.position}</h3>
-                    <p className="text-gray-500 text-sm">{job.company} · {job.location}</p>
-                  </div>
-                </div>
-                <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
-                  {job.type}
-                </span>
-              </div>
-              
-              <p className="text-gray-500 text-sm mb-4">
-                {job.company} is looking for {job.position} to help team ma ...
-              </p>
-              
-              <div className="flex gap-2">
-                {job.tags.map((tag) => (
-                  <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
+        <div className="flex items-center justify-between mb-10">
+          <h2 className="text-3xl font-bold text-gray-900">Featured jobs</h2>
+          <Link href="/jobs" className="text-sm font-medium text-primary hover:underline">
+            View all →
+          </Link>
         </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-xl border bg-card p-5 animate-pulse h-48" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {jobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
-  );
-};
-
-export default FeaturedJobs;
+  )
+}

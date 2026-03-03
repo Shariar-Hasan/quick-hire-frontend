@@ -29,7 +29,7 @@ export const parseTextToHtml: TextToHtmlHandler = (html, config) => {
 
 export abstract class Parser {
     // Parse HTML to Text with line breaks
-    public static html2text: HtmlToTextHandler = (html, config) => {
+    public static htmlString2text: HtmlToTextHandler = (html, config) => {
         if (!html || typeof html !== "string") return "";
 
         // tags that should insert a newline before + after
@@ -111,7 +111,7 @@ export abstract class Parser {
 
 
     // Parse Text to HTML
-    public static text2html: TextToHtmlHandler = (html, config) => {
+    public static string2ui: TextToHtmlHandler = (html, config) => {
         const scopeClass = `html-scope-box-${Math.random().toString(36).slice(2)}`;
 
         const prefixedCss =

@@ -1,4 +1,6 @@
 import { BaseModel } from "./base.model";
+import { Category } from "./category.model";
+import { Company } from "./company.model";
 import { JobStatus, JobType, RemoteType } from "./enum";
 import { Location } from "./location.model";
 import { User } from "./user.model";
@@ -31,6 +33,12 @@ export interface Job extends BaseModel {
     employer?: User | null;
 
     company_id?: number | null;
+    company?: Company | null;
+
+    category_id?: number | null;
+    category?: Category | null;
+
+    tags?: string[];
 }
 
 export interface JobWithAppliedCount extends Job {

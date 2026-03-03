@@ -10,6 +10,12 @@ class UploadService extends BaseService {
         formData.append('file', file);
         return this.post('/logo', formData);
     }
+
+    async uploadResume(file: File): Promise<ServiceResult<ApiResponse<{ url: string }>>> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.post('/resume', formData);
+    }
 }
 
 export const uploadService = new UploadService();

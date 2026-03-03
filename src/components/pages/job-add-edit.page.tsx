@@ -1,9 +1,9 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus } from 'lucide-react'
+import { Plus, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -22,6 +22,7 @@ import {
 import TipTapEditor from '@/components/ui/tiptap-editor'
 import CompanyAddEditDialog from '@/modals/company-add-edit.dialog'
 import LocationAddEditDialog from '@/modals/location-add-edit.dialog'
+import { categoryService } from '@/services/category.service'
 import { companyService } from '@/services/company.service'
 import { jobService } from '@/services/job.service'
 import { locationService } from '@/services/location.service'
@@ -30,6 +31,7 @@ import { DropDownType } from '@/types/table-types'
 import { Job } from '@/types/models/job.model'
 import { format } from 'date-fns'
 import { createRoute } from '@/lib/createRoute'
+import { JOB_TAGS } from '@/constants/job-tags.constant'
 
 // ─── Zod Schema ──────────────────────────────────────────────────────────────
 
@@ -42,6 +44,8 @@ const jobSchema = z
     status: z.nativeEnum(JobStatus),
     company_id: z.coerce.number().optional(),
     location_id: z.coerce.number().optional(),
+    category_id: z.coerce.number().optional(),
+    tags: z.array(z.string()).default([]),
     salary_min: z.preprocess(
       (v) => (v === '' || v === null || v === undefined ? undefined : Number(v)),
       z.number().positive('Must be positive').optional()
@@ -92,8 +96,12 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
 
   const [companies, setCompanies] = useState<DropDownType[]>([])
   const [locations, setLocations] = useState<DropDownType[]>([])
+  const [categories, setCategories] = useState<DropDownType[]>([])
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false)
   const [locationDialogOpen, setLocationDialogOpen] = useState(false)
+  const [tagInput, setTagInput] = useState('')
+  const [tagSuggestions, setTagSuggestions] = useState<string[]>([])
+  const tagInputRef = useRef<HTMLInputElement>(null)
 
   const isEdit = !!job?.id
 
@@ -112,6 +120,8 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
       status: job?.status ?? JobStatus.DRAFT,
       company_id: job?.company_id ?? undefined,
       location_id: job?.location_id ?? undefined,
+      category_id: job?.category_id ?? undefined,
+      tags: (job?.tags as string[]) ?? [],
       salary_min: job?.salary_min ?? '',
       salary_max: job?.salary_max ?? '',
       currency: (job?.currency as 'USD' | 'BDT') ?? 'BDT',
@@ -124,9 +134,11 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
     Promise.all([
       companyService.findAllForDropDown(),
       locationService.findAllForDropDown(),
-    ]).then(([compRes, locRes]) => {
+      categoryService.findAllForDropDown(),
+    ]).then(([compRes, locRes, catRes]) => {
       if (!compRes.error) setCompanies(compRes.data?.data ?? [])
       if (!locRes.error) setLocations(locRes.data?.data ?? [])
+      if (!catRes.error) setCategories(catRes.data?.data ?? [])
     })
   }, [])
 
@@ -136,6 +148,7 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
       expires_at: values.expires_at ? new Date(values.expires_at) : undefined,
       company_id: values.company_id || undefined,
       location_id: values.location_id || undefined,
+      category_id: values.category_id || undefined,
       remote_type: values.remote_type || undefined,
       currency: values.currency || undefined,
     }
@@ -363,6 +376,128 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
                 </Button>
               </div>
             </div>
+          </div>
+
+          {/* Category */}
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Category</label>
+            <Controller
+              name="category_id"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value?.toString() ?? ''}
+                  onValueChange={(v) => field.onChange(v ? Number(v) : undefined)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c) => (
+                      <SelectItem key={c.id} value={c.id.toString()}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+
+          {/* Tags */}
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Tags</label>
+            <Controller
+              name="tags"
+              control={control}
+              render={({ field }) => {
+                const addTag = (tag: string) => {
+                  const trimmed = tag.trim()
+                  if (trimmed && !field.value.includes(trimmed)) {
+                    field.onChange([...field.value, trimmed])
+                  }
+                  setTagInput('')
+                  setTagSuggestions([])
+                }
+                const removeTag = (tag: string) => {
+                  field.onChange(field.value.filter((t: string) => t !== tag))
+                }
+                return (
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap gap-1.5">
+                      {field.value.map((tag: string) => (
+                        <span
+                          key={tag}
+                          className="flex items-center gap-1 text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full"
+                        >
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => removeTag(tag)}
+                            className="hover:text-destructive transition-colors"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    <div className="relative">
+                      <input
+                        ref={tagInputRef}
+                        type="text"
+                        value={tagInput}
+                        placeholder="Type a tag and press Enter or comma…"
+                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        onChange={(e) => {
+                          const val = e.target.value
+                          setTagInput(val)
+                          if (val.trim().length >= 1) {
+                            const lower = val.toLowerCase()
+                            setTagSuggestions(
+                              JOB_TAGS.filter(
+                                (t) =>
+                                  t.toLowerCase().includes(lower) &&
+                                  !field.value.includes(t)
+                              ).slice(0, 8)
+                            )
+                          } else {
+                            setTagSuggestions([])
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ',') {
+                            e.preventDefault()
+                            addTag(tagInput)
+                          } else if (e.key === 'Backspace' && !tagInput && field.value.length > 0) {
+                            removeTag(field.value[field.value.length - 1])
+                          }
+                        }}
+                        onBlur={() => setTimeout(() => setTagSuggestions([]), 150)}
+                      />
+                      {tagSuggestions.length > 0 && (
+                        <div className="absolute z-10 top-full mt-1 w-full bg-popover border rounded-md shadow-md overflow-hidden">
+                          {tagSuggestions.map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              className="w-full text-left px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                              onMouseDown={(e) => {
+                                e.preventDefault()
+                                addTag(s)
+                                tagInputRef.current?.focus()
+                              }}
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Press Enter or comma to add a tag. Start typing to see suggestions.</p>
+                  </div>
+                )
+              }}
+            />
           </div>
         </section>
 

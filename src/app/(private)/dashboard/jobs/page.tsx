@@ -5,9 +5,9 @@ import { useConfirm } from "@/components/providers/confirm-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useQueryParams } from "@/hooks/use-query-params";
+import { Asset } from "@/lib/asset";
 import { createRoute } from "@/lib/createRoute";
 import { Parser } from "@/lib/htmlParser";
-import { logoUrl } from "@/lib/logo-url";
 import Str from "@/lib/str";
 import { cn } from "@/lib/utils";
 import { companyService } from "@/services/company.service";
@@ -113,7 +113,7 @@ export default function JobsPage() {
       label: 'Company',
       render: (row) => (
         <Avatar className="h-9 w-9 rounded-lg">
-          <AvatarImage src={logoUrl((row as any).company?.logo_url)} alt={(row as any).company?.name} className="object-cover" />
+          <AvatarImage src={Asset.logoUrl((row as any).company?.logo_url)} alt={(row as any).company?.name} className="object-cover" />
           <AvatarFallback className="rounded-lg bg-muted text-xs font-semibold">
             {Str.initials((row as any).company?.name ?? '?')}
           </AvatarFallback>
@@ -126,7 +126,7 @@ export default function JobsPage() {
       cellClass: "max-w-[200px]",
       render: (row) => (
         <div>
-          {Parser.html2text(row.title, {
+          {Parser.htmlString2text(row.title, {
             wordCount: 5,
           })}
         </div>

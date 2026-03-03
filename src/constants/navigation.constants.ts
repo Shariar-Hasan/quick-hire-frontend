@@ -1,4 +1,4 @@
-import { Briefcase, Building2, FileText, LayoutDashboard, MapPin, PlusCircle, Users } from "lucide-react";
+import { Briefcase, Building2, FileText, LayoutDashboard, MapPin, PlusCircle, Tag, Users } from "lucide-react";
 
 export const dashboard_nav_links = [
     {
@@ -30,6 +30,11 @@ export const dashboard_nav_links = [
         title: "Locations",
         href: "/dashboard/locations",
         icon: MapPin,
+    },
+    {
+        title: "Categories",
+        href: "/dashboard/categories",
+        icon: Tag,
     },
     {
         title: "Users",

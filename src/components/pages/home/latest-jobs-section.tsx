@@ -1,93 +1,54 @@
-import React from 'react';
+'use client'
 
-const LatestJobs = () => {
-  const jobs = [
-    {
-      position: 'Social Media Assistant',
-      company: 'Nomad',
-      location: 'Paris, France',
-      type: 'Full-Time',
-      tags: ['Marketing', 'Design'],
-    },
-    {
-      position: 'Brand Designer',
-      company: 'Dropbox',
-      location: 'San Fransisco, USA',
-      type: 'Full-Time',
-      tags: ['Marketing', 'Design'],
-    },
-    {
-      position: 'Interactive Developer',
-      company: 'Terraform',
-      location: 'Hamburg, Germany',
-      type: 'Full-Time',
-      tags: ['Marketing', 'Design'],
-    },
-    {
-      position: 'HR Manager',
-      company: 'Packer',
-      location: 'Lucern, Switzerland',
-      type: 'Full-Time',
-      tags: ['Marketing', 'Design'],
-    },
-    {
-      position: 'Social Media Assistant',
-      company: 'Netflix',
-      location: 'Paris, France',
-      type: 'Full-Time',
-      tags: ['Marketing', 'Design'],
-    },
-    {
-      position: 'Brand Designer',
-      company: 'Maze',
-      location: 'San Fransisco, USA',
-      type: 'Full-Time',
-      tags: ['Marketing', 'Design'],
-    },
-    {
-      position: 'Interactive Developer',
-      company: 'Udacity',
-      location: 'Hamburg, Germany',
-      type: 'Full-Time',
-      tags: ['Marketing', 'Design'],
-    },
-    {
-      position: 'HR Manager',
-      company: 'Webflow',
-      location: 'Lucern, Switzerland',
-      type: 'Full-Time',
-      tags: ['Marketing', 'Design'],
-    },
-  ];
+import JobCard from '@/components/shared/JobCard'
+import { jobService } from '@/services/job.service'
+import { Job } from '@/types/models/job.model'
+import { Briefcase } from 'lucide-react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+
+export default function LatestJobs() {
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    jobService
+      .findAll({ page: 1, limit: 8, status: 'PUBLISHED' })
+      .then(({ data, error }) => {
+        if (!error) setJobs(data?.data.data ?? [])
+      })
+      .finally(() => setLoading(false))
+  }, [])
 
   return (
     <section className="bg-white px-6 py-16">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-gray-900 mb-10">Latest jobs open</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {jobs.map((job, index) => (
-            <div key={index} className="border border-gray-200 p-6 rounded-xl hover:shadow-lg transition">
-              <h3 className="font-semibold text-gray-900 mb-2">{job.position}</h3>
-              <p className="text-gray-500 text-sm mb-3">{job.company} · {job.location}</p>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
-                  {job.type}
-                </span>
-              </div>
-              <div className="flex gap-2">
-                {job.tags.map((tag) => (
-                  <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
+        <div className="flex items-center justify-between mb-10">
+          <h2 className="text-3xl font-bold text-gray-900">Latest jobs open</h2>
+          <Link href="/jobs" className="text-sm font-medium text-primary hover:underline">
+            View all jobs →
+          </Link>
         </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="rounded-xl border bg-card p-5 animate-pulse h-48" />
+            ))}
+          </div>
+        ) : jobs.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground">
+            <Briefcase className="h-10 w-10 mx-auto mb-3 opacity-30" />
+            <p>No jobs available right now.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {jobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
-  );
-};
-
-export default LatestJobs;
+  )
+}

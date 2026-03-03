@@ -2,27 +2,17 @@
 
 import AppTable from '@/components/dashboard/AppTable'
 import { useConfirm } from '@/components/providers/confirm-provider'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useQueryParams } from '@/hooks/use-query-params'
-import { companyService } from '@/services/company.service'
-import { Company, CompanySize } from '@/types/models/company.model'
+import CategoryAddEditDialog from '@/modals/category-add-edit.dialog'
+import { categoryService } from '@/services/category.service'
+import { Category } from '@/types/models/category.model'
 import { AppTableColumn } from '@/types/table-types'
-import { Building2, Pencil, Trash } from 'lucide-react'
+import { Tag, Pencil, Trash } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import CompanyAddEditDialog from '@/modals/company-add-edit.dialog'
-import { Asset } from '@/lib/asset'
 
-const sizeLabels: Record<CompanySize, string> = {
-  STARTUP: 'Startup',
-  SMALL: 'Small',
-  MEDIUM: 'Medium',
-  LARGE: 'Large',
-  ENTERPRISE: 'Enterprise',
-}
-
-export default function CompaniesPage() {
+export default function CategoriesPage() {
   const confirm = useConfirm()
-  const { queryParams, setOptions, options } = useQueryParams<Company>({
+  const { queryParams, setOptions, options } = useQueryParams<Category>({
     search: '',
     page: 1,
     limit: 20,
@@ -31,17 +21,17 @@ export default function CompaniesPage() {
     filters: {},
   })
 
-  const [companies, setCompanies] = useState<Company[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [selected, setSelected] = useState<Company | null>(null)
+  const [selected, setSelected] = useState<Category | null>(null)
 
   const getData = useCallback(async () => {
     setLoading(true)
-    const { data, error } = await companyService.findAll(queryParams)
+    const { data, error } = await categoryService.findAll(queryParams)
     if (!error) {
-      setCompanies(data?.data.data ?? [])
+      setCategories(data?.data.data ?? [])
       setTotal(data?.data.meta.total ?? 0)
     }
     setLoading(false)
@@ -50,55 +40,40 @@ export default function CompaniesPage() {
   useEffect(() => { getData() }, [getData])
 
   const openAdd = () => { setSelected(null); setDialogOpen(true) }
-  const openEdit = (c: Company) => { setSelected(c); setDialogOpen(true) }
+  const openEdit = (c: Category) => { setSelected(c); setDialogOpen(true) }
 
-  const handleDelete = async (c: Company) => {
+  const handleDelete = async (c: Category) => {
     if (!await confirm({
-      title: 'Delete Company',
+      title: 'Delete Category',
       description: `Are you sure you want to delete "${c.name}"?`,
       confirmText: 'Yes, Delete',
       cancelText: 'Cancel',
     })) return
-    await companyService.remove(c.id)
+    await categoryService.remove(c.id)
     getData()
   }
 
-  const columns: AppTableColumn<Company>[] = [
+  const columns: AppTableColumn<Category>[] = [
     {
-      label: 'Company',
+      label: 'Category',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <Avatar className="h-9 w-9 rounded-lg">
-            <AvatarImage src={Asset.logoUrl(row.logo_url)} alt={row.name} className="object-cover" />
-            <AvatarFallback className="rounded-lg bg-muted">
-              <Building2 className="h-4 w-4 text-muted-foreground" />
-            </AvatarFallback>
-          </Avatar>
+          <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+            <Tag className="h-4 w-4 text-muted-foreground" />
+          </div>
           <div>
             <p className="font-medium leading-tight">{row.name}</p>
-            {row.industry && <p className="text-xs text-muted-foreground">{row.industry}</p>}
+            <p className="text-xs text-muted-foreground font-mono">{row.slug}</p>
           </div>
         </div>
       ),
     },
     {
-      label: 'Location',
+      label: 'Description',
       render: (row) =>
-        row.location
-          ? `${row.location.city}, ${row.location.country}`
-          : <span className="text-muted-foreground text-sm">—</span>,
-    },
-    {
-      label: 'Size',
-      cellClass: 'text-center',
-      render: (row) => row.size ? sizeLabels[row.size] : <span className="text-muted-foreground">—</span>,
-    },
-    {
-      label: 'Website',
-      render: (row) =>
-        row.website
-          ? <a href={row.website} target="_blank" rel="noreferrer" className="text-primary underline underline-offset-2 text-sm">{row.website.replace(/^https?:\/\//, '')}</a>
-          : <span className="text-muted-foreground text-sm">—</span>,
+        row.description
+          ? <span className="text-sm text-muted-foreground line-clamp-1">{row.description}</span>
+          : <span className="text-muted-foreground">—</span>,
     },
     {
       label: 'Actions',
@@ -125,13 +100,13 @@ export default function CompaniesPage() {
             debounce
             delay={600}
             onChange={(val) => setOptions((p) => ({ ...p, search: val, page: 1 }))}
-            placeholder="Search companies..."
+            placeholder="Search categories..."
             className="w-60"
             clearable
             onClear={() => setOptions((p) => ({ ...p, search: '', page: 1 }))}
           />
           <div className="flex items-center gap-2">
-            <AppTable.Button type="add" title="Add Company" onClick={openAdd} />
+            <AppTable.Button type="add" title="Add Category" onClick={openAdd} />
             <AppTable.Button type="refresh" title="Refresh" onClick={getData} />
           </div>
         </div>
@@ -139,7 +114,7 @@ export default function CompaniesPage() {
         <div className="flex justify-between items-center mb-4 px-6 w-full">
           <AppTable.PaginationDetail page={options.page} limit={options.limit} total={total}>
             {({ itemStart, itemEnd, total }) => (
-              <span className="text-sm text-muted-foreground">Showing {itemStart} – {itemEnd} of {total} companies</span>
+              <span className="text-sm text-muted-foreground">Showing {itemStart} – {itemEnd} of {total} categories</span>
             )}
           </AppTable.PaginationDetail>
           <div className="flex items-center gap-2">
@@ -150,13 +125,13 @@ export default function CompaniesPage() {
 
         <AppTable.Body
           columns={columns}
-          datalist={companies}
+          datalist={categories}
           loading={loading}
           onRowClick={(row) => openEdit(row)}
         />
       </AppTable>
 
-      <CompanyAddEditDialog
+      <CategoryAddEditDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         initialData={selected}

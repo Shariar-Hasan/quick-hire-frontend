@@ -133,7 +133,7 @@ export default function DashboardPage() {
                 const total = data?.jobs.total || 1
                 const pct = Math.round((val / total) * 100)
                 return (
-                  <div key={key} className={`flex items-center justify-between px-4 py-3 ${statusConfig[key.toUpperCase()]?.bg ?? 'bg-muted'}`}>
+                  <div key={key} className={`flex items-center justify-between px-4 py-3 ${cfg.bg}`}>
                     <span className={`text-sm font-medium ${cfg.color}`}>{cfg.label}</span>
                     <div className="text-right">
                       <p className={`text-xl font-bold ${cfg.color}`}>{val}</p>

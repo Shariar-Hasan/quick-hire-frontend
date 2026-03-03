@@ -3,7 +3,10 @@ import Image from 'next/image';
 
 const HeroSection = () => {
   return (
-    <section className="bg-white px-6 py-16 md:py-24">
+    <section
+      className="bg-white px-6 py-16 md:py-24"
+      style={{ backgroundImage: "url('/pattern.png')", backgroundRepeat: 'no-repeat', backgroundSize: 'auto', backgroundPosition: '80% 60%' }}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row items-center gap-12">
           {/* Left Content */}
@@ -60,13 +63,18 @@ const HeroSection = () => {
           </div>
 
           {/* Right Image Placeholder */}
-          <div className="flex-1">
-            <div className="bg-linear-to-br from-blue-100 to-purple-100 rounded-3xl p-8 h-96 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-20 h-20 bg-blue-200 rounded-full mx-auto mb-4"></div>
-                <p className="text-gray-500">Hero Image Placeholder</p>
-                <p className="text-sm text-gray-400">(You can add your image here)</p>
-              </div>
+          <div className="flex-1 hidden md:block max-h-max">
+            <div className="p-8 h-96 flex items-center justify-center">
+              <Image
+                src="/hero_man.png"
+                alt="Hero Image"
+                width={400}
+                height={300}
+                className="object-contain z-10"
+              />
+            <div className='relative overflow-hidden w-full h-full border border-blue-500' >
+              <div className='absolute bottom-0 -right-25 w-150 h-50 rotate-[-27deg] bg-red-500 origin-center translate-y-50' />
+            </div>
             </div>
           </div>
         </div>

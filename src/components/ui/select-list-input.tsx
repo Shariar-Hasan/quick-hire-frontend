@@ -1,4 +1,4 @@
-import { MultiSelectFilterProps, SelectFilterProps } from '@/types/table.types'
+import { MultiSelectFilterProps, SelectFilterProps } from '@/types/table-types'
 import MultiSelect from './multiselect'
 
 const SelectListInput = (props: SelectFilterProps | MultiSelectFilterProps) => {

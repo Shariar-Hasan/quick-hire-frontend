@@ -413,19 +413,19 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
               render={({ field }) => {
                 const addTag = (tag: string) => {
                   const trimmed = tag.trim()
-                  if (trimmed && !field.value.includes(trimmed)) {
-                    field.onChange([...field.value, trimmed])
+                  if (trimmed && !field?.value?.includes?.(trimmed)) {
+                    field.onChange([...field?.value!, trimmed])
                   }
                   setTagInput('')
                   setTagSuggestions([])
                 }
                 const removeTag = (tag: string) => {
-                  field.onChange(field.value.filter((t: string) => t !== tag))
+                  field.onChange(field.value?.filter?.((t: string) => t !== tag))
                 }
                 return (
                   <div className="space-y-2">
                     <div className="flex flex-wrap gap-1.5">
-                      {field.value.map((tag: string) => (
+                      {field.value?.map?.((tag: string) => (
                         <span
                           key={tag}
                           className="flex items-center gap-1 text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full"
@@ -457,7 +457,7 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
                               JOB_TAGS.filter(
                                 (t) =>
                                   t.toLowerCase().includes(lower) &&
-                                  !field.value.includes(t)
+                                  !field.value?.includes?.(t)
                               ).slice(0, 8)
                             )
                           } else {
@@ -468,8 +468,8 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
                           if (e.key === 'Enter' || e.key === ',') {
                             e.preventDefault()
                             addTag(tagInput)
-                          } else if (e.key === 'Backspace' && !tagInput && field.value.length > 0) {
-                            removeTag(field.value[field.value.length - 1])
+                          } else if (e.key === 'Backspace' && !tagInput && field.value?.length! > 0) {
+                            removeTag((field.value || [])?.[(field.value || [])?.length! - 1])
                           }
                         }}
                         onBlur={() => setTimeout(() => setTagSuggestions([]), 150)}

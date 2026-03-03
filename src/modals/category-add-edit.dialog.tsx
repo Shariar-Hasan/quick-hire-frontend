@@ -13,7 +13,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { categoryService } from '@/services/category.service'
 import { Category } from '@/types/models/category.model'
 import { DropDownType } from '@/types/table-types'
@@ -106,7 +105,12 @@ export default function CategoryAddEditDialog({
               name="description"
               control={control}
               render={({ field }) => (
-                <Textarea {...field} placeholder="Short description (optional)" rows={3} />
+                  <textarea
+                    {...field}
+                    placeholder="Short description (optional)"
+                    rows={3}
+                    className="flex min-h-18 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+                  />
               )}
             />
           </div>

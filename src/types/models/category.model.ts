@@ -5,4 +5,6 @@ export interface Category extends BaseModel {
     name: string;
     description?: string | null;
     slug: string;
+    logo_url?: string | null;
+    is_featured?: boolean;
 }

@@ -7,6 +7,7 @@ import CategoryAddEditDialog from '@/modals/category-add-edit.dialog'
 import { categoryService } from '@/services/category.service'
 import { Category } from '@/types/models/category.model'
 import { AppTableColumn } from '@/types/table-types'
+import { Asset } from '@/lib/asset'
 import { Tag, Pencil, Trash } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -58,8 +59,13 @@ export default function CategoriesPage() {
       label: 'Category',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
-            <Tag className="h-4 w-4 text-muted-foreground" />
+          <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center shrink-0 overflow-hidden border">
+            {row.logo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={Asset.logoUrl(row.logo_url)} alt={row.name} className="h-full w-full object-cover" />
+            ) : (
+              <Tag className="h-4 w-4 text-muted-foreground" />
+            )}
           </div>
           <div>
             <p className="font-medium leading-tight">{row.name}</p>
@@ -74,6 +80,12 @@ export default function CategoriesPage() {
         row.description
           ? <span className="text-sm text-muted-foreground line-clamp-1">{row.description}</span>
           : <span className="text-muted-foreground">—</span>,
+    },
+    {
+      label: 'Featured',
+      render: (row) => row.is_featured
+        ? <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">Featured</span>
+        : <span className="text-muted-foreground text-xs">—</span>,
     },
     {
       label: 'Actions',

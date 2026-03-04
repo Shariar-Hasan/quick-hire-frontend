@@ -2,6 +2,7 @@
 
 import JobCard from '@/components/shared/JobCard'
 import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { categoryService } from '@/services/category.service'
 import { companyService } from '@/services/company.service'
 import { jobService } from '@/services/job.service'
@@ -43,6 +44,7 @@ function JobsPageInner() {
   const [locationId, setLocationId]   = useState('')
   const [categoryId, setCategoryId]   = useState(initCategoryId)
   const [companyId,  setCompanyId]    = useState(initCompanyId)
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false)
   const [locationOptions, setLocationOptions]  = useState<DropDownType[]>([])
   const [categoryOptions, setCategoryOptions]  = useState<DropDownType[]>([])
   const [loading, setLoading]         = useState(true)
@@ -127,6 +129,78 @@ function JobsPageInner() {
     router.replace('/jobs')
   }
 
+  const filtersContent = (
+    <>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 font-semibold text-sm">
+          <SlidersHorizontal className="h-4 w-4" />
+          Filters
+        </div>
+        {(hasFilters || categoryId || companyId) && (
+          <button className="text-xs text-primary hover:underline" onClick={viewAll}>
+            Clear all
+          </button>
+        )}
+      </div>
+
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <input
+          type="text"
+          value={searchInput}
+          placeholder="Search by title..."
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') { setSearch(searchInput); setPage(1) } }}
+          className="w-full pl-9 pr-4 h-10 border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        />
+        {searchInput && (
+          <button
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            onClick={() => { setSearchInput(''); setSearch('') }}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      <FilterGroup
+        label="Job Type"
+        options={Object.entries(jobTypeLabel).map(([v, l]) => ({ value: v, label: l }))}
+        selected={jobType}
+        onSelect={(v) => setJobType(prev => prev === v ? '' : v)}
+        maxView={3}
+      />
+
+      <FilterGroup
+        label="Work Mode"
+        options={Object.entries(remoteTypeLabel).map(([v, l]) => ({ value: v, label: l }))}
+        selected={remoteType}
+        onSelect={(v) => setRemoteType(prev => prev === v ? '' : v)}
+        maxView={3}
+      />
+
+      {locationOptions.length > 0 && (
+        <FilterGroup
+          label="Location"
+          options={locationOptions.map(d => ({ value: String(d.id), label: d.label }))}
+          selected={locationId}
+          onSelect={(v) => setLocationId(prev => prev === v ? '' : v)}
+          maxView={4}
+        />
+      )}
+
+      {categoryOptions.length > 0 && (
+        <FilterGroup
+          label="Category"
+          options={categoryOptions.map(d => ({ value: String(d.id), label: d.label }))}
+          selected={categoryId}
+          onSelect={(v) => { setCategoryId(prev => prev === v ? '' : v); setCompanyId('') }}
+          maxView={4}
+        />
+      )}
+    </>
+  )
+
   return (
     <div className="container mx-auto px-4 py-10 max-w-7xl">
 
@@ -169,8 +243,27 @@ function JobsPageInner() {
         <p className="text-muted-foreground">{total} open positions</p>
       </div>
 
+      <div className="mb-5 lg:hidden">
+        <Sheet open={isFilterDrawerOpen} onOpenChange={setIsFilterDrawerOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" className="w-full sm:w-auto">
+              <SlidersHorizontal className="h-4 w-4 mr-2" />
+              Filters
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[86%] sm:max-w-sm p-0">
+            <SheetHeader className="border-b">
+              <SheetTitle>Filter Jobs</SheetTitle>
+            </SheetHeader>
+            <div className="p-4 space-y-5 overflow-y-auto">
+              {filtersContent}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
       {/* ── Main layout ───────────────────────────────────── */}
-      <div className="flex gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
         {/* Job list */}
         <div className="flex-1 min-w-0">
@@ -212,79 +305,8 @@ function JobsPageInner() {
         </div>
 
         {/* Filter sidebar */}
-        <div className="w-64 shrink-0 space-y-5 sticky top-20">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 font-semibold text-sm">
-              <SlidersHorizontal className="h-4 w-4" />
-              Filters
-            </div>
-            {(hasFilters || categoryId || companyId) && (
-              <button className="text-xs text-primary hover:underline" onClick={viewAll}>
-                Clear all
-              </button>
-            )}
-          </div>
-
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={searchInput}
-              placeholder="Search by title..."
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { setSearch(searchInput); setPage(1) } }}
-              className="w-full pl-9 pr-4 h-10 border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            />
-            {searchInput && (
-              <button
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                onClick={() => { setSearchInput(''); setSearch('') }}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-
-          {/* Job Type */}
-          <FilterGroup
-            label="Job Type"
-            options={Object.entries(jobTypeLabel).map(([v, l]) => ({ value: v, label: l }))}
-            selected={jobType}
-            onSelect={(v) => setJobType(prev => prev === v ? '' : v)}
-            maxView={3}
-          />
-
-          {/* Work Mode */}
-          <FilterGroup
-            label="Work Mode"
-            options={Object.entries(remoteTypeLabel).map(([v, l]) => ({ value: v, label: l }))}
-            selected={remoteType}
-            onSelect={(v) => setRemoteType(prev => prev === v ? '' : v)}
-            maxView={3}
-          />
-
-          {/* Location */}
-          {locationOptions.length > 0 && (
-            <FilterGroup
-              label="Location"
-              options={locationOptions.map(d => ({ value: String(d.id), label: d.label }))}
-              selected={locationId}
-              onSelect={(v) => setLocationId(prev => prev === v ? '' : v)}
-              maxView={4}
-            />
-          )}
-
-          {/* Category */}
-          {categoryOptions.length > 0 && (
-            <FilterGroup
-              label="Category"
-              options={categoryOptions.map(d => ({ value: String(d.id), label: d.label }))}
-              selected={categoryId}
-              onSelect={(v) => { setCategoryId(prev => prev === v ? '' : v); setCompanyId('') }}
-              maxView={4}
-            />
-          )}
+        <div className="hidden lg:block w-64 shrink-0 space-y-5 sticky top-20">
+          {filtersContent}
         </div>
       </div>
     </div>

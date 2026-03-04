@@ -20,6 +20,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { dashboard_nav_links } from "@/constants/navigation.constants";
 
@@ -27,6 +28,13 @@ import { dashboard_nav_links } from "@/constants/navigation.constants";
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  const handleMenuClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   return (
     <Sidebar>
@@ -45,7 +53,7 @@ export function DashboardSidebar() {
                     isActive={pathname === item.href}
                     tooltip={item.title}
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} onClick={handleMenuClick}>
                       <item.icon className="size-4" />
                       <span>{item.title}</span>
                     </Link>

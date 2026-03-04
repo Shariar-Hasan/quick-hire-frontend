@@ -13,17 +13,17 @@ import ApplicationViewEditDialog from '@/modals/application-view-edit.dialog'
 import { Eye } from 'lucide-react'
 
 const statusVariant: Record<ApplicationStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  APPLIED:     'secondary',
+  APPLIED: 'secondary',
   SHORTLISTED: 'default',
-  REJECTED:    'destructive',
-  HIRED:       'outline',
+  REJECTED: 'destructive',
+  HIRED: 'outline',
 }
 
 const statusLabels: Record<ApplicationStatus, string> = {
-  APPLIED:     'Applied',
+  APPLIED: 'Applied',
   SHORTLISTED: 'Shortlisted',
-  REJECTED:    'Rejected',
-  HIRED:       'Hired',
+  REJECTED: 'Rejected',
+  HIRED: 'Hired',
 }
 
 export default function ApplicationsPage() {
@@ -71,9 +71,9 @@ export default function ApplicationsPage() {
       render: (row) =>
         row.job
           ? <div>
-              <p className="font-medium text-sm leading-tight">{row.job.title}</p>
-              <p className="text-xs text-muted-foreground">{Str.caseConverter(row.job.job_type || '', { from: 'snake', to: 'normal' })}</p>
-            </div>
+            <p className="font-medium text-sm leading-tight">{row.job.title}</p>
+            <p className="text-xs text-muted-foreground">{Str.caseConverter(row.job.job_type || '', { from: 'snake', to: 'normal' })}</p>
+          </div>
           : <span className="text-muted-foreground">—</span>,
     },
     {
@@ -122,15 +122,33 @@ export default function ApplicationsPage() {
           </div>
         </div>
 
-        <div className="flex justify-between items-center mb-4 px-6 w-full">
-          <AppTable.PaginationDetail page={options.page} limit={options.limit} total={total}>
+        <div className="flex justify-between items-center mb-4 px-6 w-full flex-col sm:flex-row gap-2">
+          <AppTable.PaginationDetail
+            page={options.page}
+            limit={options.limit}
+            total={total}
+          >
             {({ itemStart, itemEnd, total }) => (
-              <span className="text-sm text-muted-foreground">Showing {itemStart} – {itemEnd} of {total} applications</span>
+              <span className="text-sm text-muted-foreground">
+                Showing {itemStart} - {itemEnd} of {total} applications
+              </span>
             )}
           </AppTable.PaginationDetail>
-          <div className="flex items-center gap-2">
-            <AppTable.Limit limit={options.limit} onLimitChange={(l) => setOptions((p) => ({ ...p, limit: l, page: 1 }))} limitOptions={[5, 10, 20, 50]} />
-            <AppTable.Pagination limit={options.limit} total={total} page={options.page} onPageChange={(p) => setOptions((prev) => ({ ...prev, page: p }))} />
+
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <AppTable.Limit
+              limit={options.limit}
+              onLimitChange={(limit) =>
+                setOptions((prev) => ({ ...prev, limit, page: 1 }))
+              }
+              limitOptions={[5, 10, 20, 50, 100]}
+            />
+            <AppTable.Pagination
+              limit={options.limit}
+              total={total}
+              page={options.page}
+              onPageChange={(page) => setOptions((prev) => ({ ...prev, page }))}
+            />
           </div>
         </div>
 
@@ -140,6 +158,36 @@ export default function ApplicationsPage() {
           loading={loading}
           onRowClick={(row) => openView(row)}
         />
+
+        <div className="flex justify-between items-center mb-4 px-6 w-full flex-col sm:flex-row gap-2">
+          <AppTable.PaginationDetail
+            page={options.page}
+            limit={options.limit}
+            total={total}
+          >
+            {({ itemStart, itemEnd, total }) => (
+              <span className="text-sm text-muted-foreground">
+                Showing {itemStart} - {itemEnd} of {total} applications
+              </span>
+            )}
+          </AppTable.PaginationDetail>
+
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <AppTable.Limit
+              limit={options.limit}
+              onLimitChange={(limit) =>
+                setOptions((prev) => ({ ...prev, limit, page: 1 }))
+              }
+              limitOptions={[5, 10, 20, 50, 100]}
+            />
+            <AppTable.Pagination
+              limit={options.limit}
+              total={total}
+              page={options.page}
+              onPageChange={(page) => setOptions((prev) => ({ ...prev, page }))}
+            />
+          </div>
+        </div>
       </AppTable>
 
       <ApplicationViewEditDialog

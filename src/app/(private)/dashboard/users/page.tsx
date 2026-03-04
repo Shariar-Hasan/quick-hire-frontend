@@ -119,15 +119,34 @@ export default function UsersPage() {
           </div>
         </div>
 
-        <div className="flex justify-between items-center mb-4 px-6 w-full">
-          <AppTable.PaginationDetail page={options.page} limit={options.limit} total={total}>
+
+        <div className="flex justify-between items-center mb-4 px-6 w-full flex-col sm:flex-row gap-2">
+          <AppTable.PaginationDetail
+            page={options.page}
+            limit={options.limit}
+            total={total}
+          >
             {({ itemStart, itemEnd, total }) => (
-              <span className="text-sm text-muted-foreground">Showing {itemStart} – {itemEnd} of {total} users</span>
+              <span className="text-sm text-muted-foreground">
+                Showing {itemStart} - {itemEnd} of {total} users
+              </span>
             )}
           </AppTable.PaginationDetail>
-          <div className="flex items-center gap-2">
-            <AppTable.Limit limit={options.limit} onLimitChange={(l) => setOptions((p) => ({ ...p, limit: l, page: 1 }))} limitOptions={[5, 10, 20, 50]} />
-            <AppTable.Pagination limit={options.limit} total={total} page={options.page} onPageChange={(p) => setOptions((prev) => ({ ...prev, page: p }))} />
+
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <AppTable.Limit
+              limit={options.limit}
+              onLimitChange={(limit) =>
+                setOptions((prev) => ({ ...prev, limit, page: 1 }))
+              }
+              limitOptions={[5, 10, 20, 50, 100]}
+            />
+            <AppTable.Pagination
+              limit={options.limit}
+              total={total}
+              page={options.page}
+              onPageChange={(page) => setOptions((prev) => ({ ...prev, page }))}
+            />
           </div>
         </div>
 
@@ -137,6 +156,37 @@ export default function UsersPage() {
           loading={loading}
           onRowClick={(row) => openEdit(row)}
         />
+
+        <div className="flex justify-between items-center mb-4 px-6 w-full flex-col sm:flex-row gap-2">
+          <AppTable.PaginationDetail
+            page={options.page}
+            limit={options.limit}
+            total={total}
+          >
+            {({ itemStart, itemEnd, total }) => (
+              <span className="text-sm text-muted-foreground">
+                Showing {itemStart} - {itemEnd} of {total} users
+              </span>
+            )}
+          </AppTable.PaginationDetail>
+
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <AppTable.Limit
+              limit={options.limit}
+              onLimitChange={(limit) =>
+                setOptions((prev) => ({ ...prev, limit, page: 1 }))
+              }
+              limitOptions={[5, 10, 20, 50, 100]}
+            />
+            <AppTable.Pagination
+              limit={options.limit}
+              total={total}
+              page={options.page}
+              onPageChange={(page) => setOptions((prev) => ({ ...prev, page }))}
+            />
+          </div>
+        </div>
+
       </AppTable>
 
       <UserAddEditDialog

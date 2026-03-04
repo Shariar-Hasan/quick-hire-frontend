@@ -1,13 +1,11 @@
-'use client'
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Asset } from '@/lib/asset'
+import { Env } from '@/constants/env.constant'
 import { Parser } from '@/lib/htmlParser'
 import Str from '@/lib/str'
-import { jobService } from '@/services/job.service'
 import { Job } from '@/types/models/job.model'
 import { JobType, RemoteType } from '@/types/models/enum'
 import {
@@ -17,14 +15,12 @@ import {
   Calendar,
   ExternalLink,
   Globe,
-  Loader2,
   MapPin,
   Wifi,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
 import { createRoute } from '@/lib/createRoute'
+import { ReactNode } from 'react'
 
 const jobTypeLabel: Record<JobType, string> = {
   FULL_TIME: 'Full Time',
@@ -47,7 +43,7 @@ function formatSalary(min?: number | null, max?: number | null, currency?: strin
   return 'Not specified'
 }
 
-function SidebarItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
+function SidebarItem({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
   return (
     <div className="flex items-start gap-3">
       <span className="mt-0.5 text-muted-foreground shrink-0">{icon}</span>
@@ -59,30 +55,27 @@ function SidebarItem({ icon, label, value }: { icon: React.ReactNode; label: str
   )
 }
 
-export default function JobDetailsPage() {
-  const { jobId } = useParams<{ jobId: string }>()
-  const [job, setJob] = useState<Job | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [notFound, setNotFound] = useState(false);
-  const router = useRouter( )
+interface Props {
+  params: Promise<{ jobId: string }>
+}
 
-  useEffect(() => {
-    jobService.findByJobId(jobId).then(({ data, error }) => {
-      if (error || !data?.data) setNotFound(true)
-      else setJob(data.data)
-      setLoading(false)
-    })
-  }, [jobId])
+async function getJob(jobId: string): Promise<Job | null> {
+  try {
+    const res = await fetch(`${Env.API_URL}/job/slug/${jobId}`, { cache: 'no-store' })
+    if (!res.ok) return null
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    )
+    const json = await res.json()
+    return json?.data ?? null
+  } catch {
+    return null
   }
+}
 
-  if (notFound || !job) {
+export default async function JobDetailsPage({ params }: Props) {
+  const { jobId } = await params
+  const job = await getJob(jobId)
+
+  if (!job) {
     return (
       <div className="text-center py-24 text-muted-foreground">
         <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-30" />
@@ -99,6 +92,9 @@ export default function JobDetailsPage() {
   const companyName = job.company?.name ?? job.employer?.name ?? 'Unknown Company'
   const expires = job.expires_at ? new Date(job.expires_at).toLocaleDateString() : null
   const isExpired = job.expires_at ? new Date(job.expires_at) < new Date() : false
+  const isApplyDisabled = job.status !== 'PUBLISHED' || isExpired
+  const applyUrl = createRoute('/jobs/:id/apply', { params: { id: job.job_id } })
+
   return (
     <div className="container mx-auto px-0 py-10 max-w-7xl">
       {/* Breadcrumb */}
@@ -208,11 +204,15 @@ export default function JobDetailsPage() {
 
             <Separator />
 
-            <Button onClick={() => {
-              router.push(createRoute('/jobs/:id/apply', { params: { id: job.job_id } }))
-            }} className="w-full" size="lg" disabled={job.status !== 'PUBLISHED' || isExpired}>
-              Apply Now
-            </Button>
+            {isApplyDisabled ? (
+              <Button className="w-full" size="lg" disabled>
+                Apply Now
+              </Button>
+            ) : (
+              <Button asChild className="w-full" size="lg">
+                <Link href={applyUrl}>Apply Now</Link>
+              </Button>
+            )}
 
             <Button asChild variant="outline" className="w-full" size="sm">
               <Link href={createRoute("/jobs")}>← Back to Jobs</Link>

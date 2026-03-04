@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardAvatar } from "@/components/dashboard/DashboardAvatar";
+import { DashboardBreadcrumb } from "@/components/dashboard/DashboardBreadcrumb";
 
 export default function DashboardLayout({
   children,
@@ -14,7 +15,7 @@ export default function DashboardLayout({
         <header className="flex h-12 items-center justify-between border-b px-4">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
-            <span className="text-sm text-muted-foreground">Dashboard</span>
+            <DashboardBreadcrumb />
           </div>
           <DashboardAvatar />
         </header>

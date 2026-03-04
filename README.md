@@ -65,6 +65,8 @@ quick-hire-task/
 | `/dashboard/users` | Manage users |
 | `/dashboard/profile` | Profile settings |
 
+> **Demo auth note:** A full login/authentication system is not implemented yet. To access dashboard pages, either go to `/login` and click the **Login** button, or navigate directly to `/dashboard`.
+
 ### Environment Variables (Frontend)
 
 Create `frontend/.env.development`:

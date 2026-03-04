@@ -166,7 +166,7 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-4xl mx-auto sm:px-4 py-8 space-y-6">
       <div>
         <h1 className="text-2xl font-bold">{isEdit ? 'Edit Job' : 'Post a New Job'}</h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -176,7 +176,7 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* ── Basic Info ──────────────────────────────────────────────── */}
-        <section className="rounded-lg border bg-card p-6 space-y-4">
+        <section className="rounded-lg border bg-card p-2 sm:p-6 space-y-4">
           <h2 className="font-semibold text-base">Basic Information</h2>
 
           {/* Title */}
@@ -222,7 +222,7 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
         </section>
 
         {/* ── Job Details ──────────────────────────────────────────────── */}
-        <section className="rounded-lg border bg-card p-6 space-y-4">
+        <section className="rounded-lg border bg-card p-2 sm:p-6 space-y-4">
           <h2 className="font-semibold text-base">Job Details</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -502,7 +502,7 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
         </section>
 
         {/* ── Compensation ─────────────────────────────────────────────── */}
-        <section className="rounded-lg border bg-card p-6 space-y-4">
+        <section className="rounded-lg border bg-card p-2 sm:p-6 space-y-4">
           <h2 className="font-semibold text-base">Compensation</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -570,7 +570,7 @@ export default function JobAddEditPage({ job }: { job?: Job }) {
         </section>
 
         {/* ── Extra ────────────────────────────────────────────────────── */}
-        <section className="rounded-lg border bg-card p-6 space-y-4">
+        <section className="rounded-lg border bg-card p-2 sm:p-6 space-y-4">
           <h2 className="font-semibold text-base">Additional Settings</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

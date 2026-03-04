@@ -270,21 +270,23 @@ export default function JobsPage() {
             }))
           }
         />
-        <AppTable.Button
-          type="add"
-          title="Add Job"
-          onClick={() => {
-            router.push(createRoute("/dashboard/jobs/post"))
-          }}
-        />
-        <AppTable.Button
-          type="refresh"
-          title="Refresh Jobs"
-          onClick={getData}
-        />
+        <div className="flex gap-2 mt-2 sm:mt-0">
+          <AppTable.Button
+            type="add"
+            title="Add Job"
+            onClick={() => {
+              router.push(createRoute("/dashboard/jobs/post"))
+            }}
+          />
+          <AppTable.Button
+            type="refresh"
+            title="Refresh Jobs"
+            onClick={getData}
+          />
+        </div>
       </div>
     </div>
-    <div className="flex justify-between items-center mb-4 px-6 w-full">
+    <div className="flex justify-between items-center mb-4 px-6 w-full flex-col sm:flex-row gap-2">
       <AppTable.PaginationDetail
         page={options.page}
         limit={options.limit}
@@ -297,7 +299,7 @@ export default function JobsPage() {
         )}
       </AppTable.PaginationDetail>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-center gap-2">
         <AppTable.Limit
           limit={options.limit}
           onLimitChange={(limit) =>

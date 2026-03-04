@@ -59,7 +59,7 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm flex flex-col md:flex-row items-center justify-between gap-4">
-          <p>2021 © QuickHire. All rights reserved.</p>
+          <p>{new Date().getFullYear()} © QuickHire. All rights reserved.</p>
           <div className='flex gap-4 justify-around'>
             <Facebook className="h-6 w-6 mx-auto mt-2 text-gray-400 hover:text-white transition-colors cursor-pointer bg-gray-900 rounded-full inline-block" />
             <Twitter className="h-6 w-6 mx-auto mt-2 text-gray-400 hover:text-white transition-colors cursor-pointer bg-gray-900 rounded-full inline-block" />
